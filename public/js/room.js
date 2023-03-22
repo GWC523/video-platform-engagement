@@ -1046,9 +1046,10 @@ async function main() {
         // Note: Handpose currently only detects one hand at a time
         // Therefore the maximum number of predictions is 1
         const predictions = await model.estimateHands(myvideo, true);
-  
+        console.log(predictions);
         if(predictions.length != 0) {
             const est = GE.estimate(predictions[0]?.landmarks, 9);
+            console.log(est);
 
             if(est.gestures[0]?.name == "thumbs_up") {
                 console.log("thumbs up")
