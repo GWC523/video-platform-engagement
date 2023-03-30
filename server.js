@@ -5,8 +5,11 @@ const moment = require('moment');
 const socketio = require('socket.io');
 const PORT = process.env.PORT || 3000;
 
+
+
 const app = express();
 const server = http.createServer(app);
+
 
 const io = socketio(server);
 
@@ -21,6 +24,8 @@ let happySocket = {};
 let sadSocket = {};
 let thumbsUpSocket = {};
 let thumbsDownSocket = {};
+let nodSocket = {};
+let shakeSocket = {};
 let roomBoard = {};
 
 io.on('connect', socket => {
@@ -36,6 +41,8 @@ io.on('connect', socket => {
         sadSocket[socket.id] = 'off';
         thumbsUpSocket[socket.io] = 'off';
         thumbsDownSocket[socket.io] = 'off';
+        nodSocket[socket.io] = 'off';
+        shakeSocket[socket.io] = 'off';
 
 
         if (rooms[roomid] && rooms[roomid].length > 0) {
@@ -43,11 +50,11 @@ io.on('connect', socket => {
             socket.to(roomid).emit('message', `${username} joined the room.`, 'Bot', moment().format(
                 "h:mm a"
             ));
-            io.to(socket.id).emit('join room', rooms[roomid].filter(pid => pid != socket.id), socketname, micSocket, videoSocket, happySocket, sadSocket, thumbsUpSocket, thumbsDownSocket);
+            io.to(socket.id).emit('join room', rooms[roomid].filter(pid => pid != socket.id), socketname, micSocket, videoSocket, happySocket, sadSocket, thumbsUpSocket, thumbsDownSocket, nodSocket, shakeSocket);
         }
         else {
             rooms[roomid] = [socket.id];
-            io.to(socket.id).emit('join room', null, null, null, null, null, null, null, null);
+            io.to(socket.id).emit('join room', null, null, null, null, null, null, null, null, null, null);
         }
 
         io.to(roomid).emit('user count', rooms[roomid].length);
@@ -79,13 +86,20 @@ io.on('connect', socket => {
             videoSocket[socket.id] = 'on';
         else if (msg == 'videooff')
             videoSocket[socket.id] = 'off';
+        else if (msg == 'nod')
+            nodSocket[socket.id] = 'on';
+        else if (msg == 'unnod')
+            nodSocket[socket.id] = 'off';
+        else if (msg == 'shake')
+            shakeSocket[socket.id] = 'on';
+        else if (msg == 'unshake')
+            shakeSocket[socket.id] = 'off';
 
-        console.log(msg + " - server") 
         socket.to(socketroom[socket.id]).emit('action', msg, socket.id);
     })
 
     socket.on('video-offer', (offer, sid) => {
-        socket.to(sid).emit('video-offer', offer, socket.id, socketname[socket.id], micSocket[socket.id], videoSocket[socket.id], happySocket[socket.id], sadSocket[socket.id], thumbsUpSocket[socket.id], thumbsDownSocket[socket.id]);
+        socket.to(sid).emit('video-offer', offer, socket.id, socketname[socket.id], micSocket[socket.id], videoSocket[socket.id], happySocket[socket.id], sadSocket[socket.id], thumbsUpSocket[socket.id], thumbsDownSocket[socket.id], nodSocket[socket.id], shakeSocket[socket.io]);
     })
 
     socket.on('video-answer', (answer, sid) => {
@@ -129,8 +143,8 @@ io.on('connect', socket => {
         rooms[socketroom[socket.id]].splice(index, 1);
         io.to(socketroom[socket.id]).emit('user count', rooms[socketroom[socket.id]].length);
         delete socketroom[socket.id];
-        console.log('--------------------');
-        console.log(rooms[socketroom[socket.id]]);
+        // console.log('--------------------');
+        // console.log(rooms[socketroom[socket.id]]);
 
         //toDo: push socket.id out of rooms
     });
