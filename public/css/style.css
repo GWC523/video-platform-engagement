@@ -452,6 +452,8 @@ navbar .logo {
   object-fit: cover;
   border-radius: 5px;
 }
+
+
 .container-room .left-cont .video-cont .video-box .nametag {
   color: white;
   bottom: 10px;
@@ -517,6 +519,21 @@ navbar .logo {
     font-size: 50px !important;
 }
 
+.container-room .left-cont .video-cont .video-box .nod-icon {
+    top: 10px;
+    position: absolute;
+    left: 50%;
+    width: 15%;
+}
+
+.container-room .left-cont .video-cont .video-box .shake-icon {
+    top: 10px;
+    position: absolute;
+    left: 50%;
+    width: 15%;
+}
+
+
 .container-room .left-cont .video-cont-single {
   height: 75vh;
 }
@@ -581,6 +598,20 @@ navbar .logo {
   right: 10px;
   font-size: 20px;
   top: 10px;
+}
+
+.container-room .left-cont .video-cont-single .video-box .nod-icon {
+  top: 10px;
+  position: absolute;
+  right: 50%;
+  width: 15%;
+}
+
+.container-room .left-cont .video-cont-single .video-box .shake-icon {
+  top: 10px;
+  position: absolute;
+  right: 50%;
+  width: 15%;
 }
 
 .container-room .left-cont .video-cont-single .video-box .thumbs-up-icon {

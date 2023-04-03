@@ -1,3 +1,5 @@
+
+
 const socket = io();
 const myvideo = document.querySelector("#vd1");
 const roomid = params.get("room");
@@ -16,7 +18,9 @@ const cutCall = document.querySelector('.cutcall');
 const screenShareButt = document.querySelector('.screenshare');
 const whiteboardButt = document.querySelector('.board-icon');
 
-console.log(host)
+
+
+// console.log(host)
 
 
 //whiteboard js start
@@ -55,7 +59,7 @@ socket.on('getCanvas', url => {
         ctx.drawImage(img, 0, 0);
     }
 
-    console.log('got canvas', url)
+    // console.log('got canvas', url)
 })
 
 function setColor(newcolor) {
@@ -154,6 +158,8 @@ let happyInfo = {};
 let sadInfo = {};
 let thumbsUpInfo = {};
 let thumbsDownInfo = {};
+let nodInfo = {};
+let shakeInfo = {};
 
 let videoTrackReceived = {};
 
@@ -174,6 +180,24 @@ mythumbsupicon.style.visibility = 'hidden';
 
 let mythumbsdownicon = document.querySelector("#mythumbsdownicon");
 mythumbsdownicon.style.visibility = 'hidden';
+
+let mynodicon = document.querySelector("#mynodicon");
+mynodicon.style.visibility = 'hidden';
+
+let myshakeicon = document.querySelector("#myshakeicon");
+myshakeicon.style.visibility = 'hidden';
+
+let myvideoicon = document.querySelector(".novideo");
+
+
+
+if(!host) {
+    console.log("not host")
+    myvideoicon.style.display = 'none';
+
+} else {
+    myvideoicon.style.display = 'visibility';
+}
 
 
 const configuration = { iceServers: [{ urls: "stun:stun.stunprotocol.org" }] }
@@ -293,15 +317,92 @@ function startCall() {
 
 }
 
-function handleVideoOffer(offer, sid, cname, micinf, vidinf, happyinf, sadinf, thumbsupinf, thumbsdowninf) {
-    console.log("handleVideoOffer:" + happyinf)
+function startNodDetect() {
+    navigator.mediaDevices.getUserMedia({ video: true })
+  .then(stream => {
+    const videoElement = document.createElement('video');
+    videoElement.srcObject = stream;
+    videoElement.play();
+    
+    const mediaRecorder = new MediaRecorder(stream);
+    const chunks = [];
+    let intervalId;
+    
+    mediaRecorder.ondataavailable = e => {
+      chunks.push(e.data);
+    };
+    
+    mediaRecorder.onstop = e => {
+      const blob = new Blob(chunks, { type: 'video/mp4' });
+      const formData = new FormData();
+      formData.append('video_frame', blob, 'recording.mp4');
+      console.log("sending video")
+      fetch('http://127.0.0.1:8000/detectHeadGesture/', {
+        method: 'POST',
+        body: formData
+      })
+      .then((response)=> response.json())
+      .then((data) => {
+        
+        console.log(data)
+
+        if(data.gesture == "nodding") {
+            console.log("nodding");
+            if(host) {
+                mynodicon.style.visibility = 'visible';
+                myshakeicon.style.visibility = 'hidden';
+            }
+            socket.emit('action', 'nod');
+            socket.emit('action', 'unshake');
+        }
+        else if(data.gesture == "turning") {
+            console.log("turning");
+            if(host) {
+                myshakeicon.style.visibility = 'visible';
+                mynodicon.style.visibility = 'hidden';
+            }
+            socket.emit('action', 'unnod');
+            socket.emit('action', 'shake');
+        } 
+        else {
+            console.log("stationary");
+            if(host) {
+                myshakeicon.style.visibility = 'hidden';
+                mynodicon.style.visibility = 'hidden';
+            }
+            socket.emit('action', 'unnod');
+            socket.emit('action', 'unshake');
+        }
+
+    
+      })
+      .catch(error => console.error(error));
+      
+      chunks.length = 0;
+    };
+    
+    mediaRecorder.start();
+    intervalId = setInterval(() => {
+      console.log("looping record")
+      mediaRecorder.stop();
+      mediaRecorder.start();
+    }, 1800);
+  })
+  .catch(error => console.error(error));
+
+}
+
+function handleVideoOffer(offer, sid, cname, micinf, vidinf, happyinf, sadinf, thumbsupinf, thumbsdowninf, nodinf, shakeinf) {
+    // console.log("handleVideoOffer:" + happyinf)
     cName[sid] = cname;
-    console.log('video offered recevied');
+    // console.log('video offered recevied');
     micInfo[sid] = micinf;
     happyInfo[sid] = happyinf;
     sadInfo[sid] = sadinf;
     thumbsUpInfo[sid] = thumbsupinf;
     thumbsDownInfo[sid] = thumbsdowninf;
+    nodInfo[sid] = nodinf;
+    shakeInfo[sid] = shakeinf
     videoInfo[sid] = vidinf;
     connections[sid] = new RTCPeerConnection(configuration);
 
@@ -325,12 +426,16 @@ function handleVideoOffer(offer, sid, cname, micinf, vidinf, happyinf, sadinf, t
             let thumbsUpIcon = document.createElement('div');
             let thumbsDownIcon = document.createElement('div');
             let videoOff = document.createElement('div');
+            let nodIcon = document.createElement('div');
+            let shakeIcon = document.createElement('div');
             videoOff.classList.add('video-off');
             muteIcon.classList.add('mute-icon');
             happyIcon.classList.add('happy-icon');
             sadIcon.classList.add('sad-icon');
             thumbsUpIcon.classList.add('thumbs-up-icon');
             thumbsDownIcon.classList.add('thumbs-down-icon');
+            nodIcon.classList.add('nod-icon');
+            shakeIcon.classList.add('shake-icon');
             name.classList.add('nametag');
             name.innerHTML = `${cName[sid]}`;
             vidCont.id = sid;
@@ -339,10 +444,14 @@ function handleVideoOffer(offer, sid, cname, micinf, vidinf, happyinf, sadinf, t
             sadIcon.id = `sad-icon${sid}`;
             thumbsUpIcon.id = `thumbs-up-icon${sid}`;
             thumbsDownIcon.id = `thumbs-down-icon${sid}`;
+            nodIcon.id = `nod-icon${sid}`;
+            shakeIcon.id = `shake-icon${sid}`;
             videoOff.id = `vidoff${sid}`;
             muteIcon.innerHTML = `<i class="fas fa-microphone-slash"></i>`;
             happyIcon.innerHTML = `<i class="fas fa-smile"></i>`;
             sadIcon.innerHTML = `<i class="fas fa-frown-open"></i>`;
+            nodIcon.innerHTML = `<img src="/Img/nod.png" alt="nod">`;
+            shakeIcon.innerHTML = `<img src="/Img/shake.png" alt="nod">`;
             thumbsUpIcon.innerHTML = `<i class="fas fa-thumbs-up"></i>`;
             thumbsDownIcon.innerHTML = `<i class="fas fa-thumbs-down"></i>`;
             videoOff.innerHTML = 'Video Off'
@@ -351,7 +460,9 @@ function handleVideoOffer(offer, sid, cname, micinf, vidinf, happyinf, sadinf, t
             newvideo.autoplay = true;
             newvideo.playsinline = true;
             newvideo.id = `video${sid}`;
+            newvideo.style.visibility = 'hidden';
             newvideo.srcObject = event.streams[0];
+
 
             if (micInfo[sid] == 'on')
                 muteIcon.style.visibility = 'hidden';
@@ -387,11 +498,27 @@ function handleVideoOffer(offer, sid, cname, micinf, vidinf, happyinf, sadinf, t
                     thumbsDownIcon.style.visibility = 'visible';
                 }
 
+                if (nodInfo[sid] == 'off') {
+                    nodIcon.style.visibility = 'hidden';
+                }
+                else {
+                    nodIcon.style.visibility = 'visible';
+                }
+
+                if (shakeInfo[sid] == 'off') {
+                    shakeIcon.style.visibility = 'hidden';
+                }
+                else {
+                    shakeIcon.style.visibility = 'visible';
+                }
+
 
                 vidCont.appendChild(happyIcon);
                 vidCont.appendChild(sadIcon);
                 vidCont.appendChild(thumbsUpIcon);
                 vidCont.appendChild(thumbsDownIcon);
+                vidCont.appendChild(nodIcon);
+                vidCont.appendChild(shakeIcon);
             }
 
             if (videoInfo[sid] == 'on')
@@ -540,7 +667,7 @@ socket.on('new icecandidate', handleNewIceCandidate);
 socket.on('video-answer', handleVideoAnswer);
 
 
-socket.on('join room', async (conc, cnames, micinfo, videoinfo, happyinfo, sadinfo, thumbsupinfo, thumbsdowninfo) => {
+socket.on('join room', async (conc, cnames, micinfo, videoinfo, happyinfo, sadinfo, thumbsupinfo, thumbsdowninfo, nodinfo, shakeinfo) => {
     socket.emit('getCanvas');
     console.log(happyInfo)
     if (cnames)
@@ -563,6 +690,12 @@ socket.on('join room', async (conc, cnames, micinfo, videoinfo, happyinfo, sadin
 
     if (thumbsdowninfo)
         thumbsDownInfo = thumbsdowninfo;
+
+    if (nodinfo)
+        nodInfo = nodinfo;
+
+    if (shakeinfo)
+        shakeInfo = shakeinfo;
 
 
     console.log(cName);
@@ -587,6 +720,8 @@ socket.on('join room', async (conc, cnames, micinfo, videoinfo, happyinfo, sadin
                     let muteIcon = document.createElement('div');
                     let happyIcon = document.createElement('div');
                     let sadIcon = document.createElement('div');
+                    let nodIcon = document.createElement('div');
+                    let shakeIcon = document.createElement('div');
                     let thumbsUpIcon = document.createElement('div');
                     let thumbsDownIcon = document.createElement('div');
                     let videoOff = document.createElement('div');
@@ -596,12 +731,16 @@ socket.on('join room', async (conc, cnames, micinfo, videoinfo, happyinfo, sadin
                     sadIcon.classList.add('sad-icon');
                     thumbsUpIcon.classList.add('thumbs-up-icon');
                     thumbsDownIcon.classList.add('thumbs-down-icon');
+                    nodIcon.classList.add('nod-icon');
+                    shakeIcon.classList.add('shake-icon');
                     name.classList.add('nametag');
                     name.innerHTML = `${cName[sid]}`;
                     vidCont.id = sid;
                     muteIcon.id = `mute${sid}`;
                     happyIcon.id = `happy-icon${sid}`;
                     sadIcon.id = `sad-icon${sid}`;
+                    nodIcon.id = `nod-icon${sid}`;
+                    shakeIcon.id = `shake-icon${sid}`;
                     videoOff.id = `vidoff${sid}`;
                     thumbsUpIcon.id = `thumbs-up-icon${sid}`;
                     thumbsDownIcon.id = `thumbs-down-icon${sid}`;
@@ -610,13 +749,15 @@ socket.on('join room', async (conc, cnames, micinfo, videoinfo, happyinfo, sadin
                     sadIcon.innerHTML = `<i class="fas fa-frown-open"></i>`;
                     thumbsUpIcon.innerHTML = `<i class="fas fa-thumbs-up"></i>`;
                     thumbsDownIcon.innerHTML = `<i class="fas fa-thumbs-down"></i>`;
-
+                    nodIcon.innerHTML = `<img src="/Img/nod.png" alt="nod">`;
+                    shakeIcon.innerHTML = `<img src="/Img/shake.png" alt="nod">`;
                     videoOff.innerHTML = 'Video Off'
                     vidCont.classList.add('video-box');
                     newvideo.classList.add('video-frame');
                     newvideo.autoplay = true;
                     newvideo.playsinline = true;
                     newvideo.id = `video${sid}`;
+                    newvideo.style.visibility = 'hidden';
                     newvideo.srcObject = event.streams[0];
 
                     if (micInfo[sid] == 'on')
@@ -654,10 +795,26 @@ socket.on('join room', async (conc, cnames, micinfo, videoinfo, happyinfo, sadin
                             thumbsDownIcon.style.visibility = 'hidden';
                         }
 
+                        if (nodInfo[sid] == 'on') {
+                            nodIcon.style.visibility = 'visible';
+                        }   
+                        else {
+                            nodIcon.style.visibility = 'hidden';
+                        }
+
+                        if (shakeInfo[sid] == 'on') {
+                            nodIcon.style.visibility = 'visible';
+                        }   
+                        else {
+                            nodIcon.style.visibility = 'hidden';
+                        }
+
                         vidCont.appendChild(happyIcon);
                         vidCont.appendChild(sadIcon);
                         vidCont.appendChild(thumbsUpIcon);
                         vidCont.appendChild(thumbsDownIcon);
+                        vidCont.appendChild(nodIcon);
+                        vidCont.appendChild(shakeIcon);
                     }
 
                     if (videoInfo[sid] == 'on')
@@ -707,6 +864,7 @@ socket.on('join room', async (conc, cnames, micinfo, videoinfo, happyinfo, sadin
             console.log('added all sockets to connections');
             startCall();
             main();
+            startNodDetect();
         })
 
     }
@@ -724,6 +882,7 @@ socket.on('join room', async (conc, cnames, micinfo, videoinfo, happyinfo, sadin
                 myvideo.muted = true;
                 mystream = localStream;
                 main();
+                startNodDetect();
             })
             .catch(handleGetUserMediaError);
         })
@@ -828,9 +987,6 @@ myvideo.addEventListener('play', async () => {
         new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceExpressions()
         const resizedDetections = faceapi.resizeResults(detections, displaySize)
         canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height)
-        faceapi.draw.drawDetections(canvas, resizedDetections)
-        faceapi.draw.drawFaceLandmarks(canvas, resizedDetections)
-        faceapi.draw.drawFaceExpressions(canvas, resizedDetections)
 
         if(detections[0].expressions.sad > calibrateSad || detections[0].expressions.fearful > calibrateFear){
         happyAllowed = 0;
@@ -914,7 +1070,7 @@ audioButt.addEventListener('click', () => {
 })
 
 socket.on('action', (msg, sid) => {
-    console.log(msg)
+    // console.log(msg)
     if (msg == 'mute') {
         console.log(sid + ' muted themself');
         document.querySelector(`#mute${sid}`).style.visibility = 'visible';
@@ -923,35 +1079,35 @@ socket.on('action', (msg, sid) => {
         happyInfo[sid] = 'on';
     }
     else if (msg == 'unmute') {
-        console.log(sid + ' unmuted themself');
+        // console.log(sid + ' unmuted themself');
         document.querySelector(`#mute${sid}`).style.visibility = 'hidden';
         micInfo[sid] = 'on';
         document.querySelector(`#happy-icon${sid}`).style.visibility = 'hidden';
         happyInfo[sid] = 'off';
     }
     else if (msg == 'happyon') {
-        console.log(sid + ' is happy');
+        // console.log(sid + ' is happy');
         if(host) {
             document.querySelector(`#happy-icon${sid}`).style.visibility = 'visible';
         }
         happyInfo[sid] = 'on';
     }
     else if (msg == 'happyoff') {
-        console.log(sid + ' is not happy');
+        // console.log(sid + ' is not happy');
         if(host) {
             document.querySelector(`#happy-icon${sid}`).style.visibility = 'hidden';
         }
         happyInfo[sid] = 'off';
     }
     else if (msg == 'sadon') {
-        console.log(sid + ' is sad');
+        // console.log(sid + ' is sad');
         if(host) {
             document.querySelector(`#sad-icon${sid}`).style.visibility = 'visible';
         }
         sadInfo[sid] = 'on';
     }
     else if (msg == 'sadoff') {
-        console.log(sid + ' is not sad');
+        // console.log(sid + ' is not sad');
         if(host) {
             document.querySelector(`#sad-icon${sid}`).style.visibility = 'hidden';
         }
@@ -981,13 +1137,37 @@ socket.on('action', (msg, sid) => {
         }
         thumbsDownInfo[sid] = 'off';
     }
+    else if (msg == 'nod') {
+        if(host) {
+            document.querySelector(`#nod-icon${sid}`).style.visibility = 'visible';
+        }
+        nodInfo[sid] = 'on';
+    }
+    else if (msg == 'unnod') {
+        if(host) {
+            document.querySelector(`#nod-icon${sid}`).style.visibility = 'hidden';
+        }
+        nodInfo[sid] = 'off';
+    }
+    else if (msg == 'shake') {
+        if(host) {
+            document.querySelector(`#shake-icon${sid}`).style.visibility = 'visible';
+        }
+        shakeInfo[sid] = 'on';
+    }
+    else if (msg == 'unshake') {
+        if(host) {
+            document.querySelector(`#shake-icon${sid}`).style.visibility = 'hidden';
+        }
+        shakeInfo[sid] = 'off';
+    }
     else if (msg == 'videooff') {
-        console.log(sid + 'turned video off');
+        // console.log(sid + 'turned video off');
         document.querySelector(`#vidoff${sid}`).style.visibility = 'hidden';
         videoInfo[sid] = 'off';
     }
     else if (msg == 'videoon') {
-        console.log(sid + 'turned video on');
+        // console.log(sid + 'turned video on');
         document.querySelector(`#vidoff${sid}`).style.visibility = 'hidden';
         videoInfo[sid] = 'on';
     }
@@ -1037,7 +1217,7 @@ async function main() {
 
       // load handpose model
       const model = await handpose.load();
-      console.log("Handpose model loaded");
+    //   console.log("Handpose model loaded");
 
       // main estimation loop
       const estimateHands = async () => {
@@ -1046,13 +1226,13 @@ async function main() {
         // Note: Handpose currently only detects one hand at a time
         // Therefore the maximum number of predictions is 1
         const predictions = await model.estimateHands(myvideo, true);
-        console.log(predictions);
+        // console.log(predictions);
         if(predictions.length != 0) {
             const est = GE.estimate(predictions[0]?.landmarks, 9);
-            console.log(est);
+            // console.log(est);
 
             if(est.gestures[0]?.name == "thumbs_up") {
-                console.log("thumbs up")
+                // console.log("thumbs up")
                   thumbsUpAllowed = 1;
                   thumbsDownAllowed = 0;
 
@@ -1065,7 +1245,7 @@ async function main() {
                     socket.emit('action', 'unthumbsdown');
             }
             else if(est.gestures[0]?.name == "thumbs_down") {
-                console.log("thumbs down")
+                // console.log("thumbs down")
                   thumbsUpAllowed = 0;
                   thumbsDownAllowed = 1;
 
@@ -1107,5 +1287,5 @@ async function main() {
       };
 
       estimateHands();
-      console.log("Starting predictions");
+    //   console.log("Starting predictions");
     }
