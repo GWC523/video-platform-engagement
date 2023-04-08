@@ -800,7 +800,31 @@ navbar .logo {
   background-color: #f8f8f8;
   cursor: pointer;
 }
-.container-room .right-cont .chat-cont {
+
+.status-name{
+  font-weight: bold;
+  color: #393e46;
+  background-color: #ffffff;
+  text-align: center;
+  margin-top: 2%;
+}
+
+.stats-group{
+  font-weight: bold;
+  color: #393e46;
+  background-color: #ffffff;
+  width: 80%;
+  margin-left: 10%;
+  margin-top: 4%;
+}
+
+.stats-cont{
+  background-color: #ffffff;
+  height: 84vh;
+  overflow:none;
+}
+
+.container-room .right-cont .chat-cont .stats-cont {
   background-color: #ffffff;
   height: 84vh;
   padding: 10px;
