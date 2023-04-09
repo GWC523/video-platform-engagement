@@ -511,7 +511,7 @@ navbar .logo {
 }
 
 .container-room .left-cont .video-cont .video-box .sad-icon {
-    color: #3883fc;
+    color: rgb(249, 43, 36);
     top: 10px;
     position: absolute;
     left: 10px;
@@ -786,7 +786,8 @@ navbar .logo {
   border-bottom: 2px solid #393e46;
 }
 .container-room .right-cont .head-title .chats,
-.container-room .right-cont .head-title .attendies {
+.container-room .right-cont .head-title .attendies,
+.container-room .right-cont .head-title .stats {
   padding: 10px;
   padding-top: 20px;
   width: 100%;
@@ -794,11 +795,36 @@ navbar .logo {
   transition: background-color 0.5s;
 }
 .container-room .right-cont .head-title .chats:hover,
-.container-room .right-cont .head-title .attendies:hover {
+.container-room .right-cont .head-title .attendies:hover,
+.container-room .right-cont .head-title .stats:hover {
   background-color: #f8f8f8;
   cursor: pointer;
 }
-.container-room .right-cont .chat-cont {
+
+.status-name{
+  font-weight: bold;
+  color: #393e46;
+  background-color: #ffffff;
+  text-align: center;
+  margin-top: 2%;
+}
+
+.stats-group{
+  font-weight: bold;
+  color: #393e46;
+  background-color: #ffffff;
+  width: 80%;
+  margin-left: 10%;
+  margin-top: 4%;
+}
+
+.stats-cont{
+  background-color: #ffffff;
+  height: 84vh;
+  overflow:none;
+}
+
+.container-room .right-cont .chat-cont .stats-cont {
   background-color: #ffffff;
   height: 84vh;
   padding: 10px;
