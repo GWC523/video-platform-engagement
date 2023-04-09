@@ -522,14 +522,14 @@ navbar .logo {
 .container-room .left-cont .video-cont .video-box .nod-icon {
     top: 10px;
     position: absolute;
-    left: 50%;
+    left: 45%;
     width: 15%;
 }
 
 .container-room .left-cont .video-cont .video-box .shake-icon {
     top: 10px;
     position: absolute;
-    left: 50%;
+    left: 45%;
     width: 15%;
 }
 
@@ -603,14 +603,14 @@ navbar .logo {
 .container-room .left-cont .video-cont-single .video-box .nod-icon {
   top: 10px;
   position: absolute;
-  right: 50%;
+  right: 45%;
   width: 15%;
 }
 
 .container-room .left-cont .video-cont-single .video-box .shake-icon {
   top: 10px;
   position: absolute;
-  right: 50%;
+  right: 45%;
   width: 15%;
 }
 

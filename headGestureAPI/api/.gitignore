@@ -1,0 +1,11 @@
+__pycache__
+.idea
+.mypy_cache
+venv/
+*.zip
+*.h5
+build/
+tmp/
+scripts/
+dist/
+noddingpigeon.egg-info/

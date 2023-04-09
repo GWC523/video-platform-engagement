@@ -39,6 +39,7 @@ let color = "black";
 let drawsize = 3;
 let colorRemote = "black";
 let drawsizeRemote = 3;
+let numNod = 0;
 
 function fitToContainer(canvas) {
     canvas.style.width = '100%';
@@ -344,11 +345,12 @@ function startNodDetect() {
       .then((response)=> response.json())
       .then((data) => {
         
-        console.log(data)
+    
+        
 
         if(data.gesture == "nodding") {
-            console.log("nodding");
             if(host) {
+                numNod += 1; 
                 mynodicon.style.visibility = 'visible';
                 myshakeicon.style.visibility = 'hidden';
             }
@@ -392,6 +394,7 @@ function startNodDetect() {
 
 }
 
+//Check this function out
 function handleVideoOffer(offer, sid, cname, micinf, vidinf, happyinf, sadinf, thumbsupinf, thumbsdowninf, nodinf, shakeinf) {
     // console.log("handleVideoOffer:" + happyinf)
     cName[sid] = cname;
@@ -502,6 +505,7 @@ function handleVideoOffer(offer, sid, cname, micinf, vidinf, happyinf, sadinf, t
                     nodIcon.style.visibility = 'hidden';
                 }
                 else {
+                    numNod += 1;
                     nodIcon.style.visibility = 'visible';
                 }
 
@@ -666,7 +670,7 @@ socket.on('new icecandidate', handleNewIceCandidate);
 
 socket.on('video-answer', handleVideoAnswer);
 
-
+//Check this function out
 socket.on('join room', async (conc, cnames, micinfo, videoinfo, happyinfo, sadinfo, thumbsupinfo, thumbsdowninfo, nodinfo, shakeinfo) => {
     socket.emit('getCanvas');
     console.log(happyInfo)
@@ -796,6 +800,8 @@ socket.on('join room', async (conc, cnames, micinfo, videoinfo, happyinfo, sadin
                         }
 
                         if (nodInfo[sid] == 'on') {
+
+                            numNod += 1;
                             nodIcon.style.visibility = 'visible';
                         }   
                         else {
@@ -1138,6 +1144,7 @@ socket.on('action', (msg, sid) => {
         thumbsDownInfo[sid] = 'off';
     }
     else if (msg == 'nod') {
+        console.log("nod")
         if(host) {
             document.querySelector(`#nod-icon${sid}`).style.visibility = 'visible';
         }

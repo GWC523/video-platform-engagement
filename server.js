@@ -28,6 +28,9 @@ let nodSocket = {};
 let shakeSocket = {};
 let roomBoard = {};
 
+//Instances tracker
+let numNod = 0;
+
 io.on('connect', socket => {
 
     socket.on("join room", (roomid, username) => {
@@ -62,6 +65,7 @@ io.on('connect', socket => {
     });
 
     socket.on('action', msg => {
+
         if (msg == 'mute')
             micSocket[socket.id] = 'off';
         else if (msg == 'unmute')
@@ -86,17 +90,40 @@ io.on('connect', socket => {
             videoSocket[socket.id] = 'on';
         else if (msg == 'videooff')
             videoSocket[socket.id] = 'off';
-        else if (msg == 'nod')
-            nodSocket[socket.id] = 'on';
-        else if (msg == 'unnod')
+        else if (msg == 'nod') {
+            //Example ni sya saun pag increment sa number of nods, you can do the same for other actions
+            numNod += 1;
+            nodSocket[socket.id] = 'on';//notice on sya, mu increment ra if ang message sa socket kay on 
+        }
+        else if (msg == 'unnod') {
             nodSocket[socket.id] = 'off';
+        }
         else if (msg == 'shake')
             shakeSocket[socket.id] = 'on';
         else if (msg == 'unshake')
             shakeSocket[socket.id] = 'off';
 
         socket.to(socketroom[socket.id]).emit('action', msg, socket.id);
+        // console.log("num nod:", numNodSocket)
     })
+
+    /** Make a function here na mu refresh ang number of nods and etc to
+     * 0 once mu hit sa chosen time interval sa user. You can apply a time interval function to do that
+     * You can also make a different socket for the time interval, that will store the chosen
+     * time interval of the user. In the room.js you just have to use  socket.emit('action', '') functions.
+     * 
+     * Example: 
+     * socket.emit('action', '1 min') //use if na detect na ang gi click na radio button kay 1 min
+     * socket.emit('action', '5 min') //use if na detect na ang gi click na radio button kay 5 min
+     * 
+     * Add dayun an if else statement inside line 67 function to update a local variable continang the chosen time interval na e use nimo para sa time interval funtion 
+     * Add also another socket for storing the num of instances (nod and etc) ex: numNodSocket[socket.id] = numNod and use that in your room.js to append the number of nods
+     * 
+     * Know more about sockets here:
+     * https://socket.io/docs/v4/
+     * https://www.youtube.com/watch?v=1BfCnjr_Vjg
+     * 
+     */
 
     socket.on('video-offer', (offer, sid) => {
         socket.to(sid).emit('video-offer', offer, socket.id, socketname[socket.id], micSocket[socket.id], videoSocket[socket.id], happySocket[socket.id], sadSocket[socket.id], thumbsUpSocket[socket.id], thumbsDownSocket[socket.id], nodSocket[socket.id], shakeSocket[socket.io]);
