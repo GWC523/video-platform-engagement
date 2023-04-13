@@ -107,6 +107,56 @@ io.on('connect', socket => {
         // console.log("num nod:", numNodSocket)
     })
 
+    //Time Interval Function
+    let intervalObject = null;
+
+    /**
+     * Starts an interval timer with the chosen interval value.
+     */
+    function startInterval() {
+      // Get the chosen interval value from the selected radio button.
+      let interval = parseInt(document.querySelector('input[name="interval"]:checked').value);
+      // Start the interval timer and store the object returned by the `timeInterval()` function.
+      intervalObject = timeInterval(function() {
+        console.log(`Interval function executed! Chosen interval: ${interval} ms`);
+      }, interval);
+      console.log(`Interval started with interval of ${interval} ms.`);
+      // Disable the "Start Interval" button and enable the "Cancel Interval" button.
+      document.querySelector('button[type="button"][onclick="startInterval()"]').disabled = true;
+      document.querySelector('button[type="button"][onclick="cancelInterval()"]').disabled = false;
+    }
+    
+    /**
+     * Cancels the currently running interval timer, if there is one.
+     */
+    function cancelInterval() {
+      if (intervalObject !== null) {
+        intervalObject.cancel();
+        console.log("Interval cancelled.");
+        // Enable the "Start Interval" button and disable the "Cancel Interval" button.
+        document.querySelector('button[type="button"][onclick="startInterval()"]').disabled = false;
+        document.querySelector('button[type="button"][onclick="cancelInterval()"]').disabled = true;
+      } else {
+        console.log("No interval to cancel.");
+      }
+    }
+    
+    /**
+     * Creates and returns an object with a `cancel()` method that can be used to stop the interval timer.
+     * @param {Function} callback - The function to execute at each interval.
+     * @param {number} interval - The interval duration in milliseconds.
+     * @returns {Object} - An object with a `cancel()` method that can be used to stop the interval timer.
+     */
+    function timeInterval(callback, interval) {
+        let timerId = setInterval(callback, interval);
+        return {
+          cancel: function() {
+            clearInterval(timerId);
+          }
+        };
+      }
+    
+      
     /** Make a function here na mu refresh ang number of nods and etc to
      * 0 once mu hit sa chosen time interval sa user. You can apply a time interval function to do that
      * You can also make a different socket for the time interval, that will store the chosen
