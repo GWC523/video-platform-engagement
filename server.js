@@ -27,9 +27,22 @@ let thumbsDownSocket = {};
 let nodSocket = {};
 let shakeSocket = {};
 let roomBoard = {};
+let attendees = [];
 
 //Instances tracker
 let numNod = 0;
+let numHappy = 0;
+let numSad = 0;
+let numThumbsUp = 0;
+let numThumbsDown = 0;
+let numShake = 0;
+let isHappy = {};
+let isSad = {};
+let isThumbsUp = {};
+let isThumbsDown = {};
+let startInterval = false;
+
+
 
 io.on('connect', socket => {
 
@@ -42,10 +55,11 @@ io.on('connect', socket => {
         videoSocket[socket.id] = 'on';
         happySocket[socket.id] = 'off';
         sadSocket[socket.id] = 'off';
-        thumbsUpSocket[socket.io] = 'off';
-        thumbsDownSocket[socket.io] = 'off';
+        thumbsUpSocket[socket.id] = 'off';
+        thumbsDownSocket[socket.id] = 'off';
         nodSocket[socket.io] = 'off';
         shakeSocket[socket.io] = 'off';
+
 
 
         if (rooms[roomid] && rooms[roomid].length > 0) {
@@ -60,102 +74,113 @@ io.on('connect', socket => {
             io.to(socket.id).emit('join room', null, null, null, null, null, null, null, null, null, null);
         }
 
+        attendees.push(username);
+        io.emit('update attendees', attendees);
+
         io.to(roomid).emit('user count', rooms[roomid].length);
 
     });
 
     socket.on('action', msg => {
 
-        if (msg == 'mute')
+        if (msg == 'mute') {
             micSocket[socket.id] = 'off';
-        else if (msg == 'unmute')
+        } else if (msg == 'unmute') {
             micSocket[socket.id] = 'on';
-        else if (msg == 'happy')
+        } else if (msg == 'happyon') {
+            if(!isHappy[socket.id] && startInterval ) {
+                isHappy[socket.id] = true;
+                numHappy += 1;
+                io.emit('update num happy', numHappy); // emit updated num nods to all clients
+            }
             happySocket[socket.id] = 'on';
-        else if (msg == 'unhappy')
+        } else if (msg == 'happyoff') {
+            isHappy[socket.id] = false;
             happySocket[socket.id] = 'off';
-        else if (msg == 'sad')
+        } else if (msg == 'sadon') {
+            if(!isSad[socket.id] && startInterval) {
+                isSad[socket.id] = true;
+                numSad += 1;
+                io.emit('update num sad', numSad);
+            }
             sadSocket[socket.id] = 'on';
-        else if (msg == 'unsad')
+        } else if (msg == 'sadoff') {
+            isSad[socket.id] = false;
             sadSocket[socket.id] = 'off';
-        else if (msg == 'thumbsup')
+        } else if (msg == 'thumbsup') {
+            if(!isThumbsUp[socket.id] && startInterval) {
+                isThumbsUp[socket.id] = true;
+                numThumbsUp += 1;
+                io.emit('update num thumbsup', numThumbsUp);
+            }
             thumbsUpSocket[socket.id] = 'on';
-        else if (msg == 'unthumbsup')
+        } else if (msg == 'unthumbsup') {
+            isThumbsUp[socket.id] = false;
             thumbsUpSocket[socket.id] = 'off';
-        else if (msg == 'thumbsdown')
+        } else if (msg == 'thumbsdown') {
+            if(!isThumbsDown[socket.id] && startInterval) {
+                isThumbsDown[socket.id] = true;
+                numThumbsDown += 1;
+                io.emit('update num thumbsdown', numThumbsDown);
+            }
+
             thumbsDownSocket[socket.id] = 'on';
-        else if (msg == 'unthumbsdown')
+        } else if (msg == 'unthumbsdown') {
+            isThumbsDown[socket.id] = false;
             thumbsDownSocket[socket.id] = 'off';
-        else if (msg == 'videoon')
+        } else if (msg == 'videoon') {
             videoSocket[socket.id] = 'on';
-        else if (msg == 'videooff')
+        } else if (msg == 'videooff') {
             videoSocket[socket.id] = 'off';
-        else if (msg == 'nod') {
-            //Example ni sya saun pag increment sa number of nods, you can do the same for other actions
+        } else if (msg == 'nod') {
+        // Example ni sya saun pag increment sa number of nods, you can do the same for other actions
             numNod += 1;
-            nodSocket[socket.id] = 'on';//notice on sya, mu increment ra if ang message sa socket kay on 
-        }
-        else if (msg == 'unnod') {
+            io.emit('update num nod', numNod); // emit updated num nods to all clients
+            nodSocket[socket.id] = 'on'; // notice on sya, mu increment ra if ang message sa socket kay on 
+        } else if (msg == 'unnod') {
             nodSocket[socket.id] = 'off';
-        }
-        else if (msg == 'shake')
+        } else if (msg == 'shake') {
+            numShake += 1;
+            io.emit('update num shake', numShake);
             shakeSocket[socket.id] = 'on';
-        else if (msg == 'unshake')
+        } else if (msg == 'unshake') {
             shakeSocket[socket.id] = 'off';
+        } else if (msg == 'startinterval') {
+            startInterval = true;
+        } else if (msg == 'cancelinterval') {
+            startInterval = false;
+            numNod = 0;
+            numHappy = 0;
+            numSad = 0;
+            numShake = 0;
+            numThumbsDown = 0;
+            numThumbsUp = 0;
+            io.emit('update num happy', numHappy);
+            io.emit('update num sad', numSad);
+            io.emit('update num thumbsup', numThumbsUp);
+            io.emit('update num thumbsdown', numThumbsDown);
+            io.emit('update num nod', numNod);
+            io.emit('update num shake', numShake);
+        } else if (msg == 'restartCount') {
+            numNod = 0;
+            numHappy = 0;
+            numSad = 0;
+            numShake = 0;
+            numThumbsDown = 0;
+            numThumbsUp = 0;
+            io.emit('update num happy', numHappy);
+            io.emit('update num sad', numSad);
+            io.emit('update num thumbsup', numThumbsUp);
+            io.emit('update num thumbsdown', numThumbsDown);
+            io.emit('update num nod', numNod);
+            io.emit('update num shake', numShake);
+        }
 
         socket.to(socketroom[socket.id]).emit('action', msg, socket.id);
         // console.log("num nod:", numNodSocket)
     })
 
-    //Time Interval Function
-    let intervalObject = null;
 
-    /**
-     * Starts an interval timer with the chosen interval value.
-     */
-    function startInterval() {
-      // Get the chosen interval value from the selected radio button.
-      let interval = parseInt(document.querySelector('input[name="interval"]:checked').value);
-      // Start the interval timer and store the object returned by the `timeInterval()` function.
-      intervalObject = timeInterval(function() {
-        console.log(`Interval function executed! Chosen interval: ${interval} ms`);
-      }, interval);
-      console.log(`Interval started with interval of ${interval} ms.`);
-      // Disable the "Start Interval" button and enable the "Cancel Interval" button.
-      document.querySelector('button[type="button"][onclick="startInterval()"]').disabled = true;
-      document.querySelector('button[type="button"][onclick="cancelInterval()"]').disabled = false;
-    }
-    
-    /**
-     * Cancels the currently running interval timer, if there is one.
-     */
-    function cancelInterval() {
-      if (intervalObject !== null) {
-        intervalObject.cancel();
-        console.log("Interval cancelled.");
-        // Enable the "Start Interval" button and disable the "Cancel Interval" button.
-        document.querySelector('button[type="button"][onclick="startInterval()"]').disabled = false;
-        document.querySelector('button[type="button"][onclick="cancelInterval()"]').disabled = true;
-      } else {
-        console.log("No interval to cancel.");
-      }
-    }
-    
-    /**
-     * Creates and returns an object with a `cancel()` method that can be used to stop the interval timer.
-     * @param {Function} callback - The function to execute at each interval.
-     * @param {number} interval - The interval duration in milliseconds.
-     * @returns {Object} - An object with a `cancel()` method that can be used to stop the interval timer.
-     */
-    function timeInterval(callback, interval) {
-        let timerId = setInterval(callback, interval);
-        return {
-          cancel: function() {
-            clearInterval(timerId);
-          }
-        };
-      }
-    
       
     /** Make a function here na mu refresh ang number of nods and etc to
      * 0 once mu hit sa chosen time interval sa user. You can apply a time interval function to do that
@@ -212,6 +237,7 @@ io.on('connect', socket => {
 
     socket.on('disconnect', () => {
         if (!socketroom[socket.id]) return;
+        delete attendees[socket.id];
         socket.to(socketroom[socket.id]).emit('message', `${socketname[socket.id]} left the chat.`, `Bot`, moment().format(
             "h:mm a"
         ));
@@ -222,7 +248,7 @@ io.on('connect', socket => {
         delete socketroom[socket.id];
         // console.log('--------------------');
         // console.log(rooms[socketroom[socket.id]]);
-
+        socket.broadcast.emit('attendee left', socket.id);
         //toDo: push socket.id out of rooms
     });
 })

@@ -102,6 +102,10 @@
 
             </div>
 
+            <div class="attendees-cont" id="attendeeList">
+
+            </div>
+
             <div class="chat-cont">
 
             </div>
@@ -126,17 +130,17 @@
                           5 minutes
                         </label>
                         <br>
-                        <button type="button" onclick="startInterval()">Start Interval</button>
-                        <button type="button" onclick="cancelInterval()" disabled>Cancel Interval</button>
+                        <button type="button" class="start-interval" id="start-interval">Start Interval</button>
+                        <button type="button" class="cancel-interval" id="cancel-interval">Cancel Interval</button>
                       </form>
                 <p class="status-name">Nonverbal Feedback Status</p>
                 <ul class="stats-group">
-                  <li>Smile - </li>
-                  <li>Frown - </li>
-                  <li>Thumbs Up - </li>
-                  <li>Thumbs Down - </li>
-                  <li>Head Nod - </li>
-                  <li>Head Shake - </li>
+                  <li>Smile - <span class="smile-num-cont" id="numHappy">0</span></li>
+                  <li>Frown - <span class="frown-num-cont" id="numSad">0</span></li>
+                  <li>Thumbs Up - <span class="thumbsup-num-cont" id="numThumbsUp">0</span></li>
+                  <li>Thumbs Down - <span class="thumbsdown-num-cont" id="numThumbsDown">0</span></li>
+                  <li>Head Nod - <span class="nod-num-cont" id="numNod">0</span></li>
+                  <li>Head Shake - <span class="shake-num-cont" id="numShake">0</span></li>
                 </ul>
             </div>
             <div class="chat-input-cont">

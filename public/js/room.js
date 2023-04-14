@@ -161,6 +161,7 @@ let thumbsUpInfo = {};
 let thumbsDownInfo = {};
 let nodInfo = {};
 let shakeInfo = {};
+let attendees = {};
 
 let videoTrackReceived = {};
 
@@ -190,14 +191,26 @@ myshakeicon.style.visibility = 'hidden';
 
 let myvideoicon = document.querySelector(".novideo");
 
+let startIntervalButton = document.getElementById('start-interval');
+let cancelIntervalButton = document.getElementById('cancel-interval');
+
+let attendeesBar = document.querySelector('.attendies');
+let attendeesList = document.querySelector('#attendeeList');
+let chatCont = document.querySelector('.chat-input-cont');
+let chatBar = document.querySelector('.chats');
+let stat = document.querySelector('.stats-cont');
+let statBar = document.querySelector('.stats');
+stat.style.visibility = 'hidden';
+attendeesList.style.display = 'none';
 
 
 if(!host) {
     console.log("not host")
     myvideoicon.style.display = 'none';
+    statBar.style.display = 'none';
 
 } else {
-    myvideoicon.style.display = 'visibility';
+    myvideoicon.style.display = 'visibile';
 }
 
 
@@ -670,6 +683,30 @@ socket.on('new icecandidate', handleNewIceCandidate);
 
 socket.on('video-answer', handleVideoAnswer);
 
+socket.on('update num nod', (numNod) => {
+    document.getElementById('numNod').innerHTML = numNod;
+});
+
+socket.on('update num happy', (numHappy) => {
+    document.getElementById('numHappy').innerHTML = numHappy;
+});
+
+socket.on('update num sad', (numSad) => {
+    document.getElementById('numSad').innerHTML = numSad;
+});
+
+socket.on('update num thumbsup', (numThumbsUp) => {
+    document.getElementById('numThumbsUp').innerHTML = numThumbsUp;
+});
+
+socket.on('update num thumbsdown', (numThumbsDown) => {
+    document.getElementById('numThumbsDown').innerHTML = numThumbsDown;
+});
+
+socket.on('update num shake', (numShake) => {
+    document.getElementById('numShake').innerHTML = numShake;
+});
+
 //Check this function out
 socket.on('join room', async (conc, cnames, micinfo, videoinfo, happyinfo, sadinfo, thumbsupinfo, thumbsdowninfo, nodinfo, shakeinfo) => {
     socket.emit('getCanvas');
@@ -928,6 +965,21 @@ socket.on('message', (msg, sendername, time) => {
     </div>
 </div>`
 });
+
+socket.on('update attendees', (attendees) => {
+  // update the attendees list on the UI
+  attendeesList.innerHTML = '';
+
+  attendees.forEach((attendee) => {
+    const li = document.createElement('li');
+    li.textContent = attendee;
+    attendeesList.appendChild(li);
+  });
+});
+
+
+
+
 
 /** Emotions  */
 var calibrateHappy = 0.8;
@@ -1193,6 +1245,87 @@ whiteboardButt.addEventListener('click', () => {
 
 cutCall.addEventListener('click', () => {
     location.href = '/';
+})
+
+    //Time Interval Function
+    let intervalObject = null;
+
+    /**
+     * Starts an interval timer with the chosen interval value.
+     */
+    function startInterval() {
+      // Get the chosen interval value from the selected radio button.
+      let interval = parseInt(document.querySelector('input[name="interval"]:checked').value);
+      // Start the interval timer and store the object returned by the `timeInterval()` function.
+       socket.emit('action', 'startinterval');
+      intervalObject = timeInterval(function() {
+        console.log(`Interval function executed! Chosen interval: ${interval} ms`);
+        socket.emit('action', 'restartCount');
+      }, interval);
+      console.log(`Interval started with interval of ${interval} ms.`);
+      // Disable the "Start Interval" button and enable the "Cancel Interval" button.
+      startIntervalButton.disabled = true;
+      cancelIntervalButton.disabled = false;
+    }
+    
+    /**
+     * Cancels the currently running interval timer, if there is one.
+     */
+    function cancelInterval() {
+      if (intervalObject !== null) {
+        intervalObject.cancel();
+        console.log("Interval cancelled.");
+        // Enable the "Start Interval" button and disable the "Cancel Interval" button.
+        startIntervalButton.disabled = false;
+        cancelIntervalButton.disabled = true;
+        socket.emit('action', 'cancelinterval');
+      } else {
+        console.log("No interval to cancel.");
+      }
+    }
+    
+    /**
+     * Creates and returns an object with a `cancel()` method that can be used to stop the interval timer.
+     * @param {Function} callback - The function to execute at each interval.
+     * @param {number} interval - The interval duration in milliseconds.
+     * @returns {Object} - An object with a `cancel()` method that can be used to stop the interval timer.
+     */
+    function timeInterval(callback, interval) {
+        let timerId = setInterval(callback, interval);
+        return {
+          cancel: function() {
+            clearInterval(timerId);
+          }
+        };
+      }
+
+      startIntervalButton.addEventListener('click', () => {
+        startInterval();
+      })
+
+      cancelIntervalButton.addEventListener('click', () => {
+        cancelInterval();
+      })
+
+statBar.addEventListener('click', () => {
+    stat.style.visibility = 'visible';
+    chatRoom.style.display = 'none';
+    attendeesList.style.display = 'none';
+    chatCont.style.visibility = 'hidden';
+})
+
+chatBar.addEventListener('click', () => {
+    stat.style.visibility = 'hidden';
+    chatRoom.style.display = 'block';
+    attendeesList.style.display = 'none';
+    chatCont.style.visibility = 'visible';
+})
+
+attendeesBar.addEventListener('click', () => {
+    attendeesList.style.display = 'block';
+    stat.style.visibility = 'hidden';
+    chatRoom.style.display = 'none';
+    chatCont.style.visibility = 'visible';
 })
 
 async function main() {
