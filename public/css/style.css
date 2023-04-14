@@ -533,6 +533,15 @@ navbar .logo {
     width: 15%;
 }
 
+.attendees-cont {
+  list-style-type: none;
+  padding: 4%;
+}
+
+.on-call-label {
+  margin-bottom: 4%;
+}
+
 
 .container-room .left-cont .video-cont-single {
   height: 75vh;
