@@ -263,7 +263,12 @@ continueButt.addEventListener('click', () => {
     username = nameField.value;
     overlayContainer.style.visibility = 'hidden';
     document.querySelector("#myname").innerHTML = `${username} (You)`;
-    socket.emit("join room", roomid, username);
+    if(host) {
+        document.querySelector("#myname").innerHTML = `${username} (Host-You)`;
+    } else {
+       myvideo.style.visibility = 'hidden';
+    }
+    socket.emit("join room", roomid, username, host);
 
 })
 
@@ -408,7 +413,7 @@ function startNodDetect() {
 }
 
 //Check this function out
-function handleVideoOffer(offer, sid, cname, micinf, vidinf, happyinf, sadinf, thumbsupinf, thumbsdowninf, nodinf, shakeinf) {
+function handleVideoOffer(offer, sid, cname, micinf, vidinf, happyinf, sadinf, thumbsupinf, thumbsdowninf, nodinf, shakeinf, hostId) {
     // console.log("handleVideoOffer:" + happyinf)
     cName[sid] = cname;
     // console.log('video offered recevied');
@@ -453,7 +458,11 @@ function handleVideoOffer(offer, sid, cname, micinf, vidinf, happyinf, sadinf, t
             nodIcon.classList.add('nod-icon');
             shakeIcon.classList.add('shake-icon');
             name.classList.add('nametag');
-            name.innerHTML = `${cName[sid]}`;
+            if(hostId == sid) {
+                name.innerHTML = `${cName[sid]} (Host)`;
+            } else {
+                name.innerHTML = `${cName[sid]}`;
+            }
             vidCont.id = sid;
             muteIcon.id = `mute${sid}`;
             happyIcon.id = `happy-icon${sid}`;
@@ -476,9 +485,14 @@ function handleVideoOffer(offer, sid, cname, micinf, vidinf, happyinf, sadinf, t
             newvideo.autoplay = true;
             newvideo.playsinline = true;
             newvideo.id = `video${sid}`;
-            newvideo.style.visibility = 'hidden';
+            console.log(sid)
+            console.log(hostId)
+            if(hostId == sid) {
+                newvideo.style.visibility = 'visible';
+            } else {
+                newvideo.style.visibility = 'hidden';
+            }       
             newvideo.srcObject = event.streams[0];
-
 
             if (micInfo[sid] == 'on')
                 muteIcon.style.visibility = 'hidden';
@@ -708,7 +722,7 @@ socket.on('update num shake', (numShake) => {
 });
 
 //Check this function out
-socket.on('join room', async (conc, cnames, micinfo, videoinfo, happyinfo, sadinfo, thumbsupinfo, thumbsdowninfo, nodinfo, shakeinfo) => {
+socket.on('join room', async (conc, cnames, micinfo, videoinfo, happyinfo, sadinfo, thumbsupinfo, thumbsdowninfo, nodinfo, shakeinfo, hostId) => {
     socket.emit('getCanvas');
     console.log(happyInfo)
     if (cnames)
@@ -775,7 +789,11 @@ socket.on('join room', async (conc, cnames, micinfo, videoinfo, happyinfo, sadin
                     nodIcon.classList.add('nod-icon');
                     shakeIcon.classList.add('shake-icon');
                     name.classList.add('nametag');
-                    name.innerHTML = `${cName[sid]}`;
+                    if(hostId == sid) {
+                        name.innerHTML = `${cName[sid]} (Host)`;
+                    } else {
+                        name.innerHTML = `${cName[sid]}`;
+                    }
                     vidCont.id = sid;
                     muteIcon.id = `mute${sid}`;
                     happyIcon.id = `happy-icon${sid}`;
@@ -798,7 +816,12 @@ socket.on('join room', async (conc, cnames, micinfo, videoinfo, happyinfo, sadin
                     newvideo.autoplay = true;
                     newvideo.playsinline = true;
                     newvideo.id = `video${sid}`;
-                    newvideo.style.visibility = 'hidden';
+                    console.log(sid)
+                    if(hostId == sid) {
+                        newvideo.style.visibility = 'visible';
+                    } else {
+                        newvideo.style.visibility = 'hidden';
+                    }
                     newvideo.srcObject = event.streams[0];
 
                     if (micInfo[sid] == 'on')

@@ -28,6 +28,7 @@ let nodSocket = {};
 let shakeSocket = {};
 let roomBoard = {};
 let attendees = [];
+let hostId = '';
 
 //Instances tracker
 let numNod = 0;
@@ -46,7 +47,7 @@ let startInterval = false;
 
 io.on('connect', socket => {
 
-    socket.on("join room", (roomid, username) => {
+    socket.on("join room", (roomid, username, isHost) => {
 
         socket.join(roomid);
         socketroom[socket.id] = roomid;
@@ -64,14 +65,24 @@ io.on('connect', socket => {
 
         if (rooms[roomid] && rooms[roomid].length > 0) {
             rooms[roomid].push(socket.id);
+            
+            if(isHost) {
+                hostId = socket.id;
+            }
+
             socket.to(roomid).emit('message', `${username} joined the room.`, 'Bot', moment().format(
                 "h:mm a"
             ));
-            io.to(socket.id).emit('join room', rooms[roomid].filter(pid => pid != socket.id), socketname, micSocket, videoSocket, happySocket, sadSocket, thumbsUpSocket, thumbsDownSocket, nodSocket, shakeSocket);
+            io.to(socket.id).emit('join room', rooms[roomid].filter(pid => pid != socket.id), socketname, micSocket, videoSocket, happySocket, sadSocket, thumbsUpSocket, thumbsDownSocket, nodSocket, shakeSocket, hostId);
         }
         else {
             rooms[roomid] = [socket.id];
-            io.to(socket.id).emit('join room', null, null, null, null, null, null, null, null, null, null);
+
+            if(isHost) {
+                hostId = socket.id;
+            }
+
+            io.to(socket.id).emit('join room', null, null, null, null, null, null, null, null, null, null, null);
         }
 
         attendees.push(username);
