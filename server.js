@@ -92,14 +92,14 @@ io.on('connect', socket => {
 
     });
 
-    socket.on('action', msg => {
+    socket.on('action', (msg, host) => {
 
         if (msg == 'mute') {
             micSocket[socket.id] = 'off';
         } else if (msg == 'unmute') {
             micSocket[socket.id] = 'on';
         } else if (msg == 'happyon') {
-            if(!isHappy[socket.id] && startInterval ) {
+            if(!isHappy[socket.id] && startInterval && !host ) {
                 isHappy[socket.id] = true;
                 numHappy += 1;
                 io.emit('update num happy', numHappy); // emit updated num nods to all clients
@@ -109,7 +109,7 @@ io.on('connect', socket => {
             isHappy[socket.id] = false;
             happySocket[socket.id] = 'off';
         } else if (msg == 'sadon') {
-            if(!isSad[socket.id] && startInterval) {
+            if(!isSad[socket.id] && startInterval && !host) {
                 isSad[socket.id] = true;
                 numSad += 1;
                 io.emit('update num sad', numSad);
@@ -119,7 +119,7 @@ io.on('connect', socket => {
             isSad[socket.id] = false;
             sadSocket[socket.id] = 'off';
         } else if (msg == 'thumbsup') {
-            if(!isThumbsUp[socket.id] && startInterval) {
+            if(!isThumbsUp[socket.id] && startInterval && !host) {
                 isThumbsUp[socket.id] = true;
                 numThumbsUp += 1;
                 io.emit('update num thumbsup', numThumbsUp);
@@ -129,7 +129,7 @@ io.on('connect', socket => {
             isThumbsUp[socket.id] = false;
             thumbsUpSocket[socket.id] = 'off';
         } else if (msg == 'thumbsdown') {
-            if(!isThumbsDown[socket.id] && startInterval) {
+            if(!isThumbsDown[socket.id] && startInterval && !host) {
                 isThumbsDown[socket.id] = true;
                 numThumbsDown += 1;
                 io.emit('update num thumbsdown', numThumbsDown);
@@ -145,15 +145,19 @@ io.on('connect', socket => {
             videoSocket[socket.id] = 'off';
         } else if (msg == 'nod') {
         // Example ni sya saun pag increment sa number of nods, you can do the same for other actions
-            numNod += 1;
-            io.emit('update num nod', numNod); // emit updated num nods to all clients
-            nodSocket[socket.id] = 'on'; // notice on sya, mu increment ra if ang message sa socket kay on 
+            if(!host) {
+                numNod += 1;
+                io.emit('update num nod', numNod); // emit updated num nods to all clients
+                nodSocket[socket.id] = 'on'; // notice on sya, mu increment ra if ang message sa socket kay on 
+            }
         } else if (msg == 'unnod') {
             nodSocket[socket.id] = 'off';
         } else if (msg == 'shake') {
-            numShake += 1;
-            io.emit('update num shake', numShake);
-            shakeSocket[socket.id] = 'on';
+            if(!host) {
+                numShake += 1;
+                io.emit('update num shake', numShake);
+                shakeSocket[socket.id] = 'on';
+            }   
         } else if (msg == 'unshake') {
             shakeSocket[socket.id] = 'off';
         } else if (msg == 'startinterval') {

@@ -1073,37 +1073,23 @@ myvideo.addEventListener('play', async () => {
         happyAllowed = 0;
         sadAllowed = 1;
 
-        if(host) {
-            myhappyicon.style.visibility = 'hidden';
-            mysadicon.style.visibility = 'visible';
-        }
-
-        socket.emit('action', 'happyoff');
-        socket.emit('action', 'sadon');
+        socket.emit('action', 'happyoff', host);
+        socket.emit('action', 'sadon', host);
         }
 
         else if(detections[0].expressions.happy > calibrateHappy){
         happyAllowed = 1;
         sadAllowed = 0;
 
-        if(host) {
-            myhappyicon.style.visibility = 'visible';
-            mysadicon.style.visibility = 'hidden';
-        }
-
-        socket.emit('action', 'happyon');
-        socket.emit('action', 'sadoff');
+        socket.emit('action', 'happyon', host);
+        socket.emit('action', 'sadoff', host);
         } 
         else {
             happyAllowed = 0;
             sadAllowed = 0;
 
-            if(host) {
-                myhappyicon.style.visibility = 'hidden';
-                mysadicon.style.visibility = 'hidden';
-            }
-            socket.emit('action', 'happyoff');
-            socket.emit('action', 'sadoff');
+            socket.emit('action', 'happyoff', host);
+            socket.emit('action', 'sadoff', host);
         }
 
     }, 100)
@@ -1399,50 +1385,31 @@ async function main() {
                   thumbsUpAllowed = 1;
                   thumbsDownAllowed = 0;
 
-                  if(host) {
-                    mythumbsupicon.style.visibility = 'visible';
-                    mythumbsdownicon.style.visibility = 'hidden';
-                  }
-
-                    socket.emit('action', 'thumbsup');
-                    socket.emit('action', 'unthumbsdown');
+                    socket.emit('action', 'thumbsup', host);
+                    socket.emit('action', 'unthumbsdown', host);
             }
             else if(est.gestures[0]?.name == "thumbs_down") {
                 // console.log("thumbs down")
                   thumbsUpAllowed = 0;
                   thumbsDownAllowed = 1;
 
-                  if(host) {
-                    mythumbsupicon.style.visibility = 'hidden';
-                    mythumbsdownicon.style.visibility = 'visible';
-                  }
 
-                    socket.emit('action', 'unthumbsup');
-                    socket.emit('action', 'thumbsdown');
+                    socket.emit('action', 'unthumbsup', host);
+                    socket.emit('action', 'thumbsdown', host);
             }
             else {
                   thumbsUpAllowed = 0;
                   thumbsDownAllowed = 0;
 
-                  if(host) {
-                    mythumbsupicon.style.visibility = 'hidden';
-                    mythumbsdownicon.style.visibility = 'hidden';
-                  }
-
-                    socket.emit('action', 'unthumbsup');
-                    socket.emit('action', 'unthumbsdown');
+                    socket.emit('action', 'unthumbsup', host);
+                    socket.emit('action', 'unthumbsdown', host);
             }
         }  else {
                   thumbsUpAllowed = 0;
                   thumbsDownAllowed = 0;
 
-                  if(host) {
-                    mythumbsupicon.style.visibility = 'hidden';
-                    mythumbsdownicon.style.visibility = 'hidden';
-                  }
-
-                    socket.emit('action', 'unthumbsup');
-                    socket.emit('action', 'unthumbsdown');
+                    socket.emit('action', 'unthumbsup', host);
+                    socket.emit('action', 'unthumbsdown', host);
         }  
 
         // ...and so on
