@@ -473,12 +473,12 @@ function handleVideoOffer(offer, sid, cname, micinf, vidinf, happyinf, sadinf, t
             shakeIcon.id = `shake-icon${sid}`;
             videoOff.id = `vidoff${sid}`;
             muteIcon.innerHTML = `<i class="fas fa-microphone-slash"></i>`;
-            happyIcon.innerHTML = `<i class="fas fa-smile"></i>`;
-            sadIcon.innerHTML = `<i class="fas fa-frown-open"></i>`;
+            happyIcon.innerHTML = `<img src="/Img/smile.png" alt="smile">`;
+            sadIcon.innerHTML = `<img src="/Img/frown.png" alt="frown">`;
             nodIcon.innerHTML = `<img src="/Img/nod.png" alt="nod">`;
             shakeIcon.innerHTML = `<img src="/Img/shake.png" alt="nod">`;
-            thumbsUpIcon.innerHTML = `<i class="fas fa-thumbs-up"></i>`;
-            thumbsDownIcon.innerHTML = `<i class="fas fa-thumbs-down"></i>`;
+            thumbsUpIcon.innerHTML = `<img src="/Img/thumbsUp.png" alt="thumbsUp">`;
+            thumbsDownIcon.innerHTML = `<img src="/Img/thumbsDown.png" alt="thumbsDown">`;
             videoOff.innerHTML = 'Video Off'
             vidCont.classList.add('video-box');
             newvideo.classList.add('video-frame');
@@ -804,10 +804,10 @@ socket.on('join room', async (conc, cnames, micinfo, videoinfo, happyinfo, sadin
                     thumbsUpIcon.id = `thumbs-up-icon${sid}`;
                     thumbsDownIcon.id = `thumbs-down-icon${sid}`;
                     muteIcon.innerHTML = `<i class="fas fa-microphone-slash"></i>`;
-                    happyIcon.innerHTML = `<i class="fas fa-smile"></i>`;
-                    sadIcon.innerHTML = `<i class="fas fa-frown-open"></i>`;
-                    thumbsUpIcon.innerHTML = `<i class="fas fa-thumbs-up"></i>`;
-                    thumbsDownIcon.innerHTML = `<i class="fas fa-thumbs-down"></i>`;
+                    happyIcon.innerHTML = `<img src="/Img/smile.png" alt="smile">`;
+                    sadIcon.innerHTML = `<img src="/Img/frown.png" alt="frown">`;
+                    thumbsUpIcon.innerHTML = `<img src="/Img/thumbsUp.png" alt="thumbsUp">`;
+                    thumbsDownIcon.innerHTML = `<img src="/Img/thumbsDown.png" alt="thumbsDown">`;
                     nodIcon.innerHTML = `<img src="/Img/nod.png" alt="nod">`;
                     shakeIcon.innerHTML = `<img src="/Img/shake.png" alt="nod">`;
                     videoOff.innerHTML = 'Video Off'
