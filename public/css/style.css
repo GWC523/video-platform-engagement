@@ -42,7 +42,7 @@ body {
 }
 
 navbar .logo {
-  font-size: 28px;
+  font-size: 36px;
   color: #393e46;
   font-weight: bold;
   padding: 0 12%;
@@ -52,7 +52,7 @@ navbar .logo {
 .main {
   display: flex;
   padding: 0 12%;
-  margin-top: 20vh;
+  margin-top: 10vh;
   width: 100%;
 }
 .main .create-join {
@@ -110,7 +110,7 @@ navbar .logo {
 }
 .main .create-join .roomcode {
   width: 100%;
-  margin-top: 30px;
+  margin-top: 15px;
   font-size: 24px;
   color: #393e46;
   text-align: center;
@@ -132,7 +132,7 @@ navbar .logo {
   border-bottom: 3px solid #d31c1c;
 }
 .main .create-join .joinroom {
-  margin-top: 20px;
+  margin-top: 5px;
   width: 100%;
   text-align: right;
   font-size: 24px;
@@ -486,14 +486,14 @@ navbar .logo {
 .container-room .left-cont .video-cont .video-box .thumbs-up-icon {
     top: 12px;
     position: absolute;
-    left: 3%;
+    right: 3%;
     width: 8%;
 }
 
 .container-room .left-cont .video-cont .video-box .thumbs-down-icon {
     bottom: 30px;
     position: absolute;
-    left: 3%;
+    right: 3%;
     width: 8%;
 }
 
@@ -630,7 +630,7 @@ navbar .logo {
   text-align: center;
   margin: 0 auto;
   display: flex;
-  margin-top: 50px;
+  margin-top: 25px;
   width: 260px;
   background-color: #ffffff;
   border-radius: 10px;
@@ -725,7 +725,7 @@ navbar .logo {
   color: #4ecca3;
   padding: 10px 20px;
   background-color: white;
-  border-bottom: 3px solid #4ecca3;
+  border-bottom:#4ecca3;
   font-weight: bold;
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
@@ -779,8 +779,8 @@ navbar .logo {
 .container-room .right-cont .head-title .chats,
 .container-room .right-cont .head-title .attendies,
 .container-room .right-cont .head-title .stats {
-  padding: 10px;
-  padding-top: 20px;
+  padding: 8px;
+  padding-top: 8px;
   width: 100%;
   text-align: center;
   transition: background-color 0.5s;
@@ -821,7 +821,7 @@ navbar .logo {
 
 .stats-cont{
   background-color: #ffffff;
-  height: 84vh;
+  height: 80vh;
   overflow:none;
 }
 

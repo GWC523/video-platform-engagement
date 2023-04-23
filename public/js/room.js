@@ -356,7 +356,7 @@ function startNodDetect() {
       const formData = new FormData();
       formData.append('video_frame', blob, 'recording.mp4');
       console.log("sending video")
-      fetch('http://127.0.0.1:8000/detectHeadGesture/', {
+      fetch('http://34.216.165.15/detectHeadGesture/', {
         method: 'POST',
         body: formData
       })
@@ -372,8 +372,8 @@ function startNodDetect() {
                 mynodicon.style.visibility = 'visible';
                 myshakeicon.style.visibility = 'hidden';
             }
-            socket.emit('action', 'nod');
-            socket.emit('action', 'unshake');
+            socket.emit('action', 'nod', host);
+            socket.emit('action', 'unshake', host);
         }
         else if(data.gesture == "turning") {
             console.log("turning");
@@ -381,8 +381,8 @@ function startNodDetect() {
                 myshakeicon.style.visibility = 'visible';
                 mynodicon.style.visibility = 'hidden';
             }
-            socket.emit('action', 'unnod');
-            socket.emit('action', 'shake');
+            socket.emit('action', 'unnod', host);
+            socket.emit('action', 'shake', host);
         } 
         else {
             console.log("stationary");
@@ -390,8 +390,8 @@ function startNodDetect() {
                 myshakeicon.style.visibility = 'hidden';
                 mynodicon.style.visibility = 'hidden';
             }
-            socket.emit('action', 'unnod');
-            socket.emit('action', 'unshake');
+            socket.emit('action', 'unnod', host);
+            socket.emit('action', 'unshake', host);
         }
 
     
@@ -406,7 +406,7 @@ function startNodDetect() {
       console.log("looping record")
       mediaRecorder.stop();
       mediaRecorder.start();
-    }, 1800);
+    }, 2800);
   })
   .catch(error => console.error(error));
 
