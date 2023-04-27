@@ -37,8 +37,15 @@ img {
   max-width: 100%;
 }
 
+canvas{
+  width: 500 !important;
+  height: 0 !important;
+}
+
+
 body {
   background-color: #ffffff;
+  height: 0;
 }
 
 navbar .logo {
@@ -48,7 +55,6 @@ navbar .logo {
   padding: 0 12%;
   margin-top: 32px;
 }
-
 .main {
   display: flex;
   padding: 0 12%;
@@ -528,6 +534,8 @@ navbar .logo {
 .attendees-cont {
   list-style-type: none;
   padding: 4%;
+  max-height: fit-content;
+  overflow-y: scroll;
 }
 
 .on-call-label {
@@ -752,6 +760,7 @@ navbar .logo {
   width: 30%;
   background-color: #ffffff;
   height: 100vh;
+  overflow-y: auto;
   /* Track */
   /* Handle */
   /* Handle on hover */

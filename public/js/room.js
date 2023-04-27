@@ -356,14 +356,13 @@ function startNodDetect() {
       const formData = new FormData();
       formData.append('video_frame', blob, 'recording.mp4');
       console.log("sending video")
-      fetch('http://34.216.165.15/detectHeadGesture/', {
+      fetch('https://engagemeet.site/detectHeadGesture/', {
         method: 'POST',
         body: formData
       })
       .then((response)=> response.json())
       .then((data) => {
         
-    
         
 
         if(data.gesture == "nodding") {
