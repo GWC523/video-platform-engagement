@@ -791,7 +791,7 @@ navbar .logo {
 .container-room .right-cont .head-title .chats,
 .container-room .right-cont .head-title .attendies,
 .container-room .right-cont .head-title .stats {
-  padding: 8px;
+  padding: 5px;
   padding-top: 8px;
   width: 100%;
   text-align: center;
@@ -833,7 +833,7 @@ navbar .logo {
 
 .stats-cont{
   background-color: #ffffff;
-  height: 80vh;
+  height: 85vh;
   overflow:none;
 }
 

@@ -279,6 +279,7 @@ continueButt.addEventListener('click', () => {
     document.querySelector("#myname").innerHTML = `${username} (You)`;
     if(host) {
         document.querySelector("#myname").innerHTML = `${username} (Host-You)`;
+        // socket.emit("refresh attendees")
     } else {
        myvideo.style.visibility = 'hidden';
     }
@@ -370,7 +371,7 @@ function startNodDetect() {
       const formData = new FormData();
       formData.append('video_frame', blob, 'recording.mp4');
       console.log("sending video")
-      fetch('https://engagemeet.site/detectHeadGesture/', {
+      fetch('https://engagemeet.site/api/detectHeadGesture/', {
         method: 'POST',
         body: formData
       })

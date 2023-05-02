@@ -79,6 +79,7 @@ io.on('connect', socket => {
             rooms[roomid] = [socket.id];
 
             if(isHost) {
+                // attendees.length = 0;
                 hostId = socket.id;
             }
 
@@ -189,6 +190,8 @@ io.on('connect', socket => {
             io.emit('update num thumbsdown', numThumbsDown);
             io.emit('update num nod', numNod);
             io.emit('update num shake', numShake);
+        // } else if (msg =='refresh attendees') {
+        //     attendees.length = 0;
         }
 
         socket.to(socketroom[socket.id]).emit('action', msg, socket.id);
