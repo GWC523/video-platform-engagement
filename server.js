@@ -253,6 +253,8 @@ io.on('connect', socket => {
     socket.on('disconnect', () => {
         if (!socketroom[socket.id]) return;
         delete attendees[socket.id];
+        // attendees.remove(socketname[socket.id]);
+        // io.emit('update attendees', attendees);
         socket.to(socketroom[socket.id]).emit('message', `${socketname[socket.id]} left the chat.`, `Bot`, moment().format(
             "h:mm a"
         ));

@@ -38,8 +38,8 @@ img {
 }
 
 canvas{
-  width: 500 !important;
-  height: 0 !important;
+  width: 500 ;
+  height: 0 ;
 }
 
 
@@ -55,6 +55,8 @@ navbar .logo {
   padding: 0 12%;
   margin-top: 32px;
 }
+
+
 .main {
   display: flex;
   padding: 0 12%;
@@ -702,6 +704,7 @@ navbar .logo {
   border-radius: 100px;
   transition: background-color 0.3s;
   transition: color 0.3s;
+  /* display: none; */
 }
 .container-room .left-cont .footer .utils .board-icon:hover {
   cursor: pointer;

@@ -68,10 +68,13 @@ function setColor(newcolor) {
     drawsize = 3;
 }
 
+
 function setEraser() {
     color = "white";
-    drawsize = 10;
+    drawsize = 20;
 }
+
+// document.querySelector(".eraser").addEventListener("click", setEraser);
 
 //might remove this
 function reportWindowSize() {
@@ -92,19 +95,26 @@ function clearBoard() {
 
 socket.on('clearBoard', () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    fitToContainer(canvas);
 })
 
+
+
+document.querySelector(".clearboard").addEventListener("click", clearBoard);
+
+
 function draw(newx, newy, oldx, oldy) {
-    ctx.strokeStyle = color;
-    ctx.lineWidth = drawsize;
-    ctx.beginPath();
-    ctx.moveTo(oldx, oldy);
-    ctx.lineTo(newx, newy);
-    ctx.stroke();
-    ctx.closePath();
+    if (color !== "white") {
+        ctx.strokeStyle = color;
+        ctx.lineWidth = drawsize;
+        ctx.beginPath();
+        ctx.moveTo(oldx, oldy);
+        ctx.lineTo(newx, newy);
+        ctx.stroke();
+        ctx.closePath();
 
-    socket.emit('store canvas', canvas.toDataURL());
-
+        socket.emit('store canvas', canvas.toDataURL());
+    }
 }
 
 function drawRemote(newx, newy, oldx, oldy) {
@@ -144,6 +154,8 @@ socket.on('draw', (newX, newY, prevX, prevY, color, size) => {
     drawsizeRemote = size;
     drawRemote(newX, newY, prevX, prevY);
 })
+
+
 
 //whiteboard js end
 
@@ -256,6 +268,8 @@ function CopyClassText() {
         document.querySelector(".copycode-button").textContent = "Copy Code";
     }, 5000);
 }
+
+document.querySelector(".copycode-button").addEventListener("click", CopyClassText);
 
 
 continueButt.addEventListener('click', () => {
@@ -657,8 +671,12 @@ function screenShareToggle() {
                 video: { mediaSource: "screen" },
             });
         }
+        // myvideo.style.visibility = 'visible';
+        // socket.emit('action', 'sharescreenon')
     } else {
         screenMediaPromise = navigator.mediaDevices.getUserMedia({ video: true });
+        // socket.emit('action', 'sharescreenoff');
+        // myvideo.style.visibility = 'hidden';
     }
     screenMediaPromise
         .then((myscreenshare) => {
@@ -680,12 +698,26 @@ function screenShareToggle() {
                 ? `<i class="fas fa-desktop"></i><span class="tooltiptext">Stop Share Screen</span>`
                 : `<i class="fas fa-desktop"></i><span class="tooltiptext">Share Screen</span>`
             );
+
+            if(screenshareEnabled) {
+                myvideo.style.visibility = 'visible';
+                socket.emit('action', 'sharescreenon'); 
+            } else {
+                socket.emit('action', 'sharescreenoff');
+                myvideo.style.visibility = 'hidden'; 
+            }
             myscreenshare.getVideoTracks()[0].onended = function() {
-                if (screenshareEnabled) screenShareToggle();
+                if (screenshareEnabled) {
+                    screenShareToggle();
+                    socket.emit('action', 'sharescreenoff');
+                    myvideo.style.visibility = 'hidden';        
+                } 
             };
         })
         .catch((e) => {
             alert("Unable to share screen:" + e.message);
+            socket.emit('action', 'sharescreenoff');
+             myvideo.style.visibility = 'hidden';
             console.error(e);
         });
 }
@@ -1237,6 +1269,12 @@ socket.on('action', (msg, sid) => {
         // console.log(sid + 'turned video on');
         document.querySelector(`#vidoff${sid}`).style.visibility = 'hidden';
         videoInfo[sid] = 'on';
+    }
+    else if (msg == 'sharescreenon') {
+        document.querySelector(`#video${sid}`).style.visibility = 'visible';
+    }
+    else if (msg == 'sharescreenoff') {
+        document.querySelector(`#video${sid}`).style.visibility = 'hidden';
     }
 })
 
