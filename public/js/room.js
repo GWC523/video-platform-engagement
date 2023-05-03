@@ -367,6 +367,8 @@ function startNodDetect() {
     };
     
     mediaRecorder.onstop = e => {
+        socket.emit('action', 'unnod', host);
+        socket.emit('action', 'unshake', host);
       const blob = new Blob(chunks, { type: 'video/mp4' });
       const formData = new FormData();
       formData.append('video_frame', blob, 'recording.mp4');
@@ -381,20 +383,20 @@ function startNodDetect() {
         
 
         if(data.gesture == "nodding") {
-            if(host) {
-                numNod += 1; 
-                mynodicon.style.visibility = 'visible';
-                myshakeicon.style.visibility = 'hidden';
-            }
+            // if(host) {
+            //     numNod += 1; 
+            //     mynodicon.style.visibility = 'visible';
+            //     myshakeicon.style.visibility = 'hidden';
+            // }
             socket.emit('action', 'nod', host);
             socket.emit('action', 'unshake', host);
         }
         else if(data.gesture == "turning") {
             console.log("turning");
-            if(host) {
-                myshakeicon.style.visibility = 'visible';
-                mynodicon.style.visibility = 'hidden';
-            }
+            // if(host) {
+            //     myshakeicon.style.visibility = 'visible';
+            //     mynodicon.style.visibility = 'hidden';
+            // }
             socket.emit('action', 'unnod', host);
             socket.emit('action', 'shake', host);
         } 
