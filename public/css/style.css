@@ -161,6 +161,7 @@ navbar .logo {
   background-color: #393e46;
   border-radius: 10px;
   object-fit: cover;
+  transform: scaleX(-1);
 }
 .main .video-cont .settings {
   margin: 0 auto;
@@ -457,8 +458,9 @@ navbar .logo {
   height: 100%;
   min-height: 200px;
   width: 100%;
-  object-fit: cover;
+  object-fit: contain;
   border-radius: 5px;
+  transform: scaleX(-1);
 }
 
 
@@ -563,6 +565,7 @@ navbar .logo {
   width: 100%;
   object-fit: cover;
   border-radius: 5px;
+  transform: scaleX(-1);
 }
 .container-room .left-cont .video-cont-single .video-box .nametag {
   color: white;
@@ -764,6 +767,7 @@ navbar .logo {
   background-color: #ffffff;
   height: 100vh;
   overflow-y: auto;
+  overflow-x: hidden;
   /* Track */
   /* Handle */
   /* Handle on hover */

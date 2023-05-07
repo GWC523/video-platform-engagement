@@ -220,10 +220,13 @@ if(!host) {
     console.log("not host")
     myvideoicon.style.display = 'none';
     statBar.style.display = 'none';
+    screenShareButt.style.display = 'none';
 
 } else {
-    myvideoicon.style.display = 'visibile';
+    myvideoicon.style.display = 'visible';
+    screenShareButt.style.display = 'visible'
 }
+
 
 
 const configuration = { iceServers: [{ urls: "stun:stun.stunprotocol.org" }] }
@@ -279,7 +282,7 @@ continueButt.addEventListener('click', () => {
     document.querySelector("#myname").innerHTML = `${username} (You)`;
     if(host) {
         document.querySelector("#myname").innerHTML = `${username} (Host-You)`;
-        // socket.emit("refresh attendees")
+        socket.emit("refresh attendees")
     } else {
        myvideo.style.visibility = 'hidden';
     }
@@ -674,12 +677,12 @@ function screenShareToggle() {
                 video: { mediaSource: "screen" },
             });
         }
-        // myvideo.style.visibility = 'visible';
-        // socket.emit('action', 'sharescreenon')
+        myvideo.style.visibility = 'visible';
+        socket.emit('action', 'sharescreenon')
     } else {
         screenMediaPromise = navigator.mediaDevices.getUserMedia({ video: true });
-        // socket.emit('action', 'sharescreenoff');
-        // myvideo.style.visibility = 'hidden';
+        socket.emit('action', 'sharescreenoff');
+        myvideo.style.visibility = 'hidden';
     }
     screenMediaPromise
         .then((myscreenshare) => {
@@ -704,16 +707,19 @@ function screenShareToggle() {
 
             if(screenshareEnabled) {
                 myvideo.style.visibility = 'visible';
+                // myvideo.style.objectFit = 'cover'
                 socket.emit('action', 'sharescreenon'); 
             } else {
                 socket.emit('action', 'sharescreenoff');
-                myvideo.style.visibility = 'hidden'; 
+                myvideo.style.visibility = 'visible'; 
+                // myvideo.style.objectFit = 'cover'
             }
             myscreenshare.getVideoTracks()[0].onended = function() {
                 if (screenshareEnabled) {
                     screenShareToggle();
                     socket.emit('action', 'sharescreenoff');
-                    myvideo.style.visibility = 'hidden';        
+                    myvideo.style.visibility = 'hidden';      
+                    // myvideo.style.objectFit = 'cover'  
                 } 
             };
         })
@@ -1274,11 +1280,34 @@ socket.on('action', (msg, sid) => {
         videoInfo[sid] = 'on';
     }
     else if (msg == 'sharescreenon') {
-        document.querySelector(`#video${sid}`).style.visibility = 'visible';
+        // document.querySelector(`#video${sid}`).style.visibility = 'visible';
+        const videoContainer = document.querySelector(`#video${sid}`);
+        videoContainer.style.visibility = 'visible';
+        videoContainer.style.imageRendering = 'auto'; // Add image-rendering style
+        videoContainer.style.zIndex = '2';
+        videoContainer.style.width = '980px';
+        videoContainer.style.height = '600px';
+        videoContainer.style.position = 'fixed';
+        videoContainer.style.top = '50%';
+        videoContainer.style.left = '36.5%';
+        videoContainer.style.transform = 'translate(-50%, -50%)';
+        // videoContainer.style.transform = 'scaleX(-1)';
+        // videoContainer.style.objectFit = 'contain'
+
     }
     else if (msg == 'sharescreenoff') {
-        document.querySelector(`#video${sid}`).style.visibility = 'hidden';
+        const videoContainer = document.querySelector(`#video${sid}`);
+        videoContainer.style.visibility = 'visible';
+        videoContainer.style.width = '100%';
+        videoContainer.style.height = '100%';
+        videoContainer.style.position = 'absolute';
+        videoContainer.style.top = '50%';
+        videoContainer.style.left = '50%';
+        videoContainer.style.transform = 'translate(-50%, -50%)';
+        // videoContainer.style.transform = 'scaleX(-1)';
+        // document.querySelector(`#video${sid}`).style.visibility = 'hidden';
     }
+    
 })
 
 whiteboardButt.addEventListener('click', () => {
@@ -1374,7 +1403,7 @@ attendeesBar.addEventListener('click', () => {
     attendeesList.style.display = 'block';
     stat.style.visibility = 'hidden';
     chatRoom.style.display = 'none';
-    chatCont.style.visibility = 'visible';
+    chatCont.style.visibility = 'hidden';
 })
 
 async function main() {
