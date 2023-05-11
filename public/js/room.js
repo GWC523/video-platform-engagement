@@ -1288,9 +1288,10 @@ socket.on('action', (msg, sid) => {
         videoContainer.style.width = '980px';
         videoContainer.style.height = '600px';
         videoContainer.style.position = 'fixed';
-        videoContainer.style.top = '50%';
+        videoContainer.style.top = '37.5%';
         videoContainer.style.left = '36.5%';
         videoContainer.style.transform = 'translate(-50%, -50%)';
+        // videoContainer.style.zIndex = '5';
         // videoContainer.style.transform = 'scaleX(-1)';
         // videoContainer.style.objectFit = 'contain'
 
@@ -1306,6 +1307,8 @@ socket.on('action', (msg, sid) => {
         videoContainer.style.transform = 'translate(-50%, -50%)';
         // videoContainer.style.transform = 'scaleX(-1)';
         // document.querySelector(`#video${sid}`).style.visibility = 'hidden';
+
+        
     }
     
 })

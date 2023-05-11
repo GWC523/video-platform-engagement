@@ -470,6 +470,8 @@ navbar .logo {
   position: absolute;
   left: 10px;
   bottom: 10px;
+
+  z-index: 2;
 }
 
 .container-room .left-cont .video-cont .video-box .video-off {
@@ -491,6 +493,8 @@ navbar .logo {
   right: 10px;
   font-size: 20px;
   bottom: 10px;
+
+  z-index: 2;
 }
 
 .container-room .left-cont .video-cont .video-box .thumbs-up-icon {
@@ -573,6 +577,8 @@ navbar .logo {
   position: absolute;
   left: 10px;
   bottom: 10px;
+
+  z-index: 2;
 }
 .container-room .left-cont .video-cont-single .video-box .video-off {
   color: white;
@@ -592,6 +598,8 @@ navbar .logo {
   right: 10px;
   font-size: 20px;
   bottom: 10px;
+
+  z-index: 2;
 }
 
 .container-room .left-cont .video-cont-single .video-box .happy-icon {
