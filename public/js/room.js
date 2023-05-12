@@ -421,11 +421,11 @@ function startNodDetect() {
     };
     
     mediaRecorder.start();
-    // intervalId = setInterval(() => {
-    //   console.log("looping record")
+    intervalId = setInterval(() => {
+      console.log("looping record")
       mediaRecorder.stop();
       mediaRecorder.start();
-    // }, 2800);
+    }, 15000);
   })
   .catch(error => console.error(error));
 
