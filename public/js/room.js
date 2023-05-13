@@ -376,7 +376,7 @@ function startNodDetect() {
       const formData = new FormData();
       formData.append('video_frame', blob, 'recording.mp4');
       console.log("sending video")
-      fetch('https://engagemeet.site/api/detectHeadGesture/', {
+      fetch('http://34.221.222.0/api/detectHeadGesture/', {
         method: 'POST',
         body: formData
       })
