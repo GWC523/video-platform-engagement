@@ -376,7 +376,7 @@ function startNodDetect() {
       const formData = new FormData();
       formData.append('video_frame', blob, 'recording.mp4');
       console.log("sending video")
-      fetch('http://54.218.27.3/api/detectHeadGesture/', {
+      fetch('http://34.221.222.0/api/detectHeadGesture/', {
         method: 'POST',
         body: formData
       })
