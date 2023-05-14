@@ -332,11 +332,21 @@ function reportError(e) {
 
 
 function startCall() {
-
+    const mediaConstraints = {
+        video: true,
+        audio: true
+    };
     navigator.mediaDevices.getUserMedia(mediaConstraints)
         .then(localStream => {
             myvideo.srcObject = localStream;
             myvideo.muted = true;
+            if ('srcObject' in myaudio) {
+                myaudio.srcObject = localStream;
+                myaudio.autoplay = true;
+            } else {
+                myaudio.src = URL.createObjectURL(localStream);
+                myaudio.autoplay = true;
+            }
 
             localStream.getTracks().forEach(track => {
                 for (let key in connections) {
@@ -346,13 +356,15 @@ function startCall() {
                     else
                         videoTrackSent[key] = track;
                 }
-            })
-
+            });
         })
         .catch(handleGetUserMediaError);
-
-
 }
+
+document.addEventListener('click', () => {
+    startCall();
+});
+
 
 function startNodDetect() {
     navigator.mediaDevices.getUserMedia({ video: true })
