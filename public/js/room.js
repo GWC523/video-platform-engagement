@@ -1,5 +1,3 @@
-
-
 const socket = io();
 const myvideo = document.querySelector("#vd1");
 const roomid = params.get("room");
@@ -17,11 +15,6 @@ const audioButt = document.querySelector('.audio');
 const cutCall = document.querySelector('.cutcall');
 const screenShareButt = document.querySelector('.screenshare');
 const whiteboardButt = document.querySelector('.board-icon');
-
-
-
-// console.log(host)
-
 
 //whiteboard js start
 const whiteboardCont = document.querySelector('.whiteboard-cont');
@@ -74,15 +67,13 @@ function setEraser() {
     drawsize = 20;
 }
 
-// document.querySelector(".eraser").addEventListener("click", setEraser);
-
 //might remove this
 function reportWindowSize() {
     fitToContainer(canvas);
 }
 
 window.onresize = reportWindowSize;
-//
+
 
 function clearBoard() {
     if (window.confirm('Are you sure you want to clear board? This cannot be undone')) {
@@ -97,7 +88,6 @@ socket.on('clearBoard', () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     fitToContainer(canvas);
 })
-
 
 
 document.querySelector(".clearboard").addEventListener("click", clearBoard);
@@ -158,7 +148,6 @@ socket.on('draw', (newX, newY, prevX, prevY, color, size) => {
 
 
 //whiteboard js end
-
 let videoAllowed = 1;
 let audioAllowed = 1;
 let happyAllowed = 1;
@@ -238,7 +227,44 @@ let cName = {};
 let audioTrackSent = {};
 let videoTrackSent = {};
 
-let mystream, myscreenshare;
+let myscreenshare;
+
+// Create a variable to store the stream
+let mystream = null;
+
+// Function to handle getUserMedia
+async function getUserMediaOnce() {
+  // Check if the stream has already been obtained
+  if (mystream !== null) {
+    return mystream;
+  }
+
+  // Request user media access
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+
+  // Store the stream in the mystream variable
+  mystream = stream;
+
+  // Return the stream
+  return stream;
+}
+
+// Call getUserMediaOnce at the beginning of your code
+(async () => {
+  try {
+    const stream = await getUserMediaOnce();
+
+    // Use the stream in your application
+    // ...
+  } catch (error) {
+    console.error('Error accessing media devices:', error);
+  }
+})();
+
+// Later in your code, you can reuse the mystream variable
+// ...
+
+
 
 
 document.querySelector('.roomcode').innerHTML = `${roomid}`
@@ -384,7 +410,6 @@ function startNodDetect() {
       .then((data) => {
         
         
-
         if(data.gesture == "nodding") {
             if(host) {
                 //numNod += 1; 
@@ -433,9 +458,7 @@ function startNodDetect() {
 
 //Check this function out
 function handleVideoOffer(offer, sid, cname, micinf, vidinf, happyinf, sadinf, thumbsupinf, thumbsdowninf, nodinf, shakeinf, hostId) {
-    // console.log("handleVideoOffer:" + happyinf)
     cName[sid] = cname;
-    // console.log('video offered recevied');
     micInfo[sid] = micinf;
     happyInfo[sid] = happyinf;
     sadInfo[sid] = sadinf;
@@ -1305,10 +1328,6 @@ socket.on('action', (msg, sid) => {
         videoContainer.style.top = '50%';
         videoContainer.style.left = '50%';
         videoContainer.style.transform = 'translate(-50%, -50%)';
-        // videoContainer.style.transform = 'scaleX(-1)';
-        // document.querySelector(`#video${sid}`).style.visibility = 'hidden';
-
-        
     }
     
 })
@@ -1426,8 +1445,6 @@ async function main() {
     thumbsDownGesture.addCurl(finger, fp.FingerCurl.FullCurl, 1.0);
     thumbsDownGesture.addCurl(finger, fp.FingerCurl.HalfCurl, 0.9);
     }
-
-
       // configure gesture estimator
       // add "👎" and "👍" as sample gestures
       const knownGestures = [
@@ -1442,7 +1459,6 @@ async function main() {
 
       // main estimation loop
       const estimateHands = async () => {
-
         // get hand landmarks from video
         // Note: Handpose currently only detects one hand at a time
         // Therefore the maximum number of predictions is 1
