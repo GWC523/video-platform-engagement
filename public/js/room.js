@@ -210,10 +210,14 @@ if(!host) {
     myvideoicon.style.display = 'none';
     statBar.style.display = 'none';
     screenShareButt.style.display = 'none';
+    whiteboardButt.style.display = 'none'
+    audioButt.style.display = 'none'
 
 } else {
-    myvideoicon.style.display = 'visible';
-    screenShareButt.style.display = 'visible'
+    myvideoicon.style.display = 'none';
+    screenShareButt.style.display = 'none'
+    whiteboardButt.style.display = 'none'
+    audioButt.style.display = 'none'
 }
 
 
@@ -402,7 +406,7 @@ function startNodDetect() {
       const formData = new FormData();
       formData.append('video_frame', blob, 'recording.mp4');
       console.log("sending video")
-      fetch('https://engagemeet.site/api/detectHeadGesture/', {
+      fetch('https://engagemeet.online/api/detectHeadGesture/', {
         method: 'POST',
         body: formData
       })
@@ -411,54 +415,59 @@ function startNodDetect() {
         
         
         if(data.gesture == "nodding") {
-            if(host) {
-                //numNod += 1; 
-                mynodicon.style.visibility = 'hidden';
+            // if(host) {
+                //numNod += 1;
+                mynodicon.style.visibility = 'visible';
                 myshakeicon.style.visibility = 'hidden';
-            }
+            // }
             socket.emit('action', 'nod', host);
             socket.emit('action', 'unshake', host);
         }
         else if(data.gesture == "turning") {
             console.log("turning");
-            if(host) {
-                myshakeicon.style.visibility = 'hidden';
+            // if(host) {
+                myshakeicon.style.visibility = 'visible';
                 mynodicon.style.visibility = 'hidden';
-            }
+            // }
             socket.emit('action', 'unnod', host);
             socket.emit('action', 'shake', host);
-        } 
+        }
         else {
             console.log("stationary");
-            if(host) {
+            // if(host) {
                 myshakeicon.style.visibility = 'hidden';
                 mynodicon.style.visibility = 'hidden';
-            }
+            // }
             socket.emit('action', 'unnod', host);
             socket.emit('action', 'unshake', host);
         }
-
-    
+ 
+ 
+   
       })
       .catch(error => console.error(error));
-      
+     
       chunks.length = 0;
     };
-    
+   
     mediaRecorder.start();
     intervalId = setInterval(() => {
       console.log("looping record")
       mediaRecorder.stop();
       mediaRecorder.start();
-    }, 15000);
+    }, 2800);
   })
   .catch(error => console.error(error));
-
-}
-
-//Check this function out
-function handleVideoOffer(offer, sid, cname, micinf, vidinf, happyinf, sadinf, thumbsupinf, thumbsdowninf, nodinf, shakeinf, hostId) {
+ 
+ 
+ }
+ 
+ 
+ //Check this function out
+ function handleVideoOffer(offer, sid, cname, micinf, vidinf, happyinf, sadinf, thumbsupinf, thumbsdowninf, nodinf, shakeinf, hostId) {
+    // console.log("handleVideoOffer:" + happyinf)
     cName[sid] = cname;
+    // console.log('video offered recevied');
     micInfo[sid] = micinf;
     happyInfo[sid] = happyinf;
     sadInfo[sid] = sadinf;
@@ -468,16 +477,19 @@ function handleVideoOffer(offer, sid, cname, micinf, vidinf, happyinf, sadinf, t
     shakeInfo[sid] = shakeinf
     videoInfo[sid] = vidinf;
     connections[sid] = new RTCPeerConnection(configuration);
-
+ 
+ 
     connections[sid].onicecandidate = function (event) {
         if (event.candidate) {
             console.log('icecandidate fired');
             socket.emit('new icecandidate', event.candidate, sid);
         }
     };
-
+ 
+ 
     connections[sid].ontrack = function (event) {
-
+ 
+ 
         if (!document.getElementById(sid)) {
             console.log('track event fired')
             let vidCont = document.createElement('div');
@@ -533,43 +545,49 @@ function handleVideoOffer(offer, sid, cname, micinf, vidinf, happyinf, sadinf, t
                 newvideo.style.visibility = 'visible';
             } else {
                 newvideo.style.visibility = 'hidden';
-            }       
+            }      
             newvideo.srcObject = event.streams[0];
-
+ 
+ 
             if (micInfo[sid] == 'on')
                 muteIcon.style.visibility = 'hidden';
             else
                 muteIcon.style.visibility = 'visible';
-
-            if (host) {
+ 
+ 
+            // if (host) {
                 if (happyInfo[sid] == 'off') {
                     happyIcon.style.visibility = 'hidden';
                 }
                 else {
                     happyIcon.style.visibility = 'visible';
                 }
-
+ 
+ 
                 if (sadInfo[sid] == 'off') {
                     sadIcon.style.visibility = 'hidden';
                 }
                 else {
                     sadIcon.style.visibility = 'visible';
                 }
-
+ 
+ 
                 if (thumbsUpInfo[sid] == 'off') {
                     thumbsUpIcon.style.visibility = 'hidden';
                 }
                 else {
                     thumbsUpIcon.style.visibility = 'visible';
                 }
-
+ 
+ 
                 if (thumbsDownInfo[sid] == 'off') {
                     thumbsDownIcon.style.visibility = 'hidden';
                 }
                 else {
                     thumbsDownIcon.style.visibility = 'visible';
                 }
-
+ 
+ 
                 if (nodInfo[sid] == 'off') {
                     nodIcon.style.visibility = 'hidden';
                 }
@@ -577,67 +595,84 @@ function handleVideoOffer(offer, sid, cname, micinf, vidinf, happyinf, sadinf, t
                     numNod += 1;
                     nodIcon.style.visibility = 'visible';
                 }
-
+ 
+ 
                 if (shakeInfo[sid] == 'off') {
                     shakeIcon.style.visibility = 'hidden';
                 }
                 else {
                     shakeIcon.style.visibility = 'visible';
                 }
-
-
+ 
+ 
+ 
+ 
                 vidCont.appendChild(happyIcon);
                 vidCont.appendChild(sadIcon);
                 vidCont.appendChild(thumbsUpIcon);
                 vidCont.appendChild(thumbsDownIcon);
                 vidCont.appendChild(nodIcon);
                 vidCont.appendChild(shakeIcon);
-            }
-
+            // }
+ 
+ 
             if (videoInfo[sid] == 'on')
                 videoOff.style.visibility = 'hidden';
             else
                 videoOff.style.visibility = 'visible';
-
+ 
+ 
             vidCont.appendChild(newvideo);
             vidCont.appendChild(name);
             vidCont.appendChild(muteIcon);
             vidCont.appendChild(videoOff);
-
+ 
+ 
             videoContainer.appendChild(vidCont);
-
+ 
+ 
         }
-
-
+ 
+ 
+ 
+ 
     };
-
+ 
+ 
     connections[sid].onremovetrack = function (event) {
         if (document.getElementById(sid)) {
             document.getElementById(sid).remove();
             console.log('removed a track');
         }
     };
-
+ 
+ 
     connections[sid].onnegotiationneeded = function () {
-
+ 
+ 
         connections[sid].createOffer()
             .then(function (offer) {
                 return connections[sid].setLocalDescription(offer);
             })
             .then(function () {
-
+ 
+ 
                 socket.emit('video-offer', connections[sid].localDescription, sid);
-
+ 
+ 
             })
             .catch(reportError);
     };
-
+ 
+ 
     let desc = new RTCSessionDescription(offer);
-
+ 
+ 
     connections[sid].setRemoteDescription(desc)
         .then(() => { return navigator.mediaDevices.getUserMedia(mediaConstraints) })
         .then((localStream) => {
-
+ 
+ 
             localStream.getTracks().forEach(track => {
                 connections[sid].addTrack(track, localStream);
                 console.log('added local stream to peer')
@@ -652,7 +687,8 @@ function handleVideoOffer(offer, sid, cname, micinf, vidinf, happyinf, sadinf, t
                         videoTrackSent[sid].enabled = false
                 }
             })
-
+ 
+ 
         })
         .then(() => {
             return connections[sid].createAnswer();
@@ -664,31 +700,38 @@ function handleVideoOffer(offer, sid, cname, micinf, vidinf, happyinf, sadinf, t
             socket.emit('video-answer', connections[sid].localDescription, sid);
         })
         .catch(handleGetUserMediaError);
-
-
-}
-
-function handleNewIceCandidate(candidate, sid) {
+ 
+ 
+ 
+ 
+ }
+ 
+ 
+ function handleNewIceCandidate(candidate, sid) {
     console.log('new candidate recieved')
     var newcandidate = new RTCIceCandidate(candidate);
-
+ 
+ 
     connections[sid].addIceCandidate(newcandidate)
         .catch(reportError);
-}
-
-function handleVideoAnswer(answer, sid) {
+ }
+ 
+ 
+ function handleVideoAnswer(answer, sid) {
     console.log('answered the offer')
     const ans = new RTCSessionDescription(answer);
     connections[sid].setRemoteDescription(ans);
-}
-
-//Thanks to (https://github.com/miroslavpejic85) for ScreenShare Code
-
-screenShareButt.addEventListener('click', () => {
+ }
+ 
+ 
+ //Thanks to (https://github.com/miroslavpejic85) for ScreenShare Code
+ 
+ 
+ screenShareButt.addEventListener('click', () => {
     screenShareToggle();
-});
-let screenshareEnabled = false;
-function screenShareToggle() {
+ });
+ let screenshareEnabled = false;
+ function screenShareToggle() {
     let screenMediaPromise;
     if (!screenshareEnabled) {
         if (navigator.getDisplayMedia) {
@@ -700,12 +743,12 @@ function screenShareToggle() {
                 video: { mediaSource: "screen" },
             });
         }
-        myvideo.style.visibility = 'visible';
-        socket.emit('action', 'sharescreenon')
+        // myvideo.style.visibility = 'visible';
+        // socket.emit('action', 'sharescreenon')
     } else {
         screenMediaPromise = navigator.mediaDevices.getUserMedia({ video: true });
-        socket.emit('action', 'sharescreenoff');
-        myvideo.style.visibility = 'hidden';
+        // socket.emit('action', 'sharescreenoff');
+        // myvideo.style.visibility = 'hidden';
     }
     screenMediaPromise
         .then((myscreenshare) => {
@@ -718,32 +761,30 @@ function screenShareToggle() {
             }
             myscreenshare.getVideoTracks()[0].enabled = true;
             const newStream = new MediaStream([
-                myscreenshare.getVideoTracks()[0], 
+                myscreenshare.getVideoTracks()[0],
             ]);
             myvideo.srcObject = newStream;
             myvideo.muted = true;
             mystream = newStream;
-            screenShareButt.innerHTML = (screenshareEnabled 
+            screenShareButt.innerHTML = (screenshareEnabled
                 ? `<i class="fas fa-desktop"></i><span class="tooltiptext">Stop Share Screen</span>`
                 : `<i class="fas fa-desktop"></i><span class="tooltiptext">Share Screen</span>`
             );
-
+ 
+ 
             if(screenshareEnabled) {
                 myvideo.style.visibility = 'visible';
-                // myvideo.style.objectFit = 'cover'
-                socket.emit('action', 'sharescreenon'); 
+                socket.emit('action', 'sharescreenon');
             } else {
                 socket.emit('action', 'sharescreenoff');
-                myvideo.style.visibility = 'visible'; 
-                // myvideo.style.objectFit = 'cover'
+                myvideo.style.visibility = 'hidden';
             }
             myscreenshare.getVideoTracks()[0].onended = function() {
                 if (screenshareEnabled) {
                     screenShareToggle();
                     socket.emit('action', 'sharescreenoff');
-                    myvideo.style.visibility = 'hidden';      
-                    // myvideo.style.objectFit = 'cover'  
-                } 
+                    myvideo.style.visibility = 'hidden';       
+                }
             };
         })
         .catch((e) => {
@@ -752,84 +793,105 @@ function screenShareToggle() {
              myvideo.style.visibility = 'hidden';
             console.error(e);
         });
-}
-
-socket.on('video-offer', handleVideoOffer);
-
-socket.on('new icecandidate', handleNewIceCandidate);
-
-socket.on('video-answer', handleVideoAnswer);
-
-socket.on('update num nod', (numNod) => {
+ }
+ 
+ 
+ socket.on('video-offer', handleVideoOffer);
+ 
+ 
+ socket.on('new icecandidate', handleNewIceCandidate);
+ 
+ 
+ socket.on('video-answer', handleVideoAnswer);
+ 
+ 
+ socket.on('update num nod', (numNod) => {
     document.getElementById('numNod').innerHTML = numNod;
-});
-
-socket.on('update num happy', (numHappy) => {
+ });
+ 
+ 
+ socket.on('update num happy', (numHappy) => {
     document.getElementById('numHappy').innerHTML = numHappy;
-});
-
-socket.on('update num sad', (numSad) => {
+ });
+ 
+ 
+ socket.on('update num sad', (numSad) => {
     document.getElementById('numSad').innerHTML = numSad;
-});
-
-socket.on('update num thumbsup', (numThumbsUp) => {
+ });
+ 
+ 
+ socket.on('update num thumbsup', (numThumbsUp) => {
     document.getElementById('numThumbsUp').innerHTML = numThumbsUp;
-});
-
-socket.on('update num thumbsdown', (numThumbsDown) => {
+ });
+ 
+ 
+ socket.on('update num thumbsdown', (numThumbsDown) => {
     document.getElementById('numThumbsDown').innerHTML = numThumbsDown;
-});
-
-socket.on('update num shake', (numShake) => {
+ });
+ 
+ 
+ socket.on('update num shake', (numShake) => {
     document.getElementById('numShake').innerHTML = numShake;
-});
-
-//Check this function out
-socket.on('join room', async (conc, cnames, micinfo, videoinfo, happyinfo, sadinfo, thumbsupinfo, thumbsdowninfo, nodinfo, shakeinfo, hostId) => {
+ });
+ 
+ 
+ //Check this function out
+ socket.on('join room', async (conc, cnames, micinfo, videoinfo, happyinfo, sadinfo, thumbsupinfo, thumbsdowninfo, nodinfo, shakeinfo, hostId) => {
     socket.emit('getCanvas');
     console.log(happyInfo)
     if (cnames)
         cName = cnames;
-
+ 
+ 
     if (micinfo)
         micInfo = micinfo;
-
+ 
+ 
     if (videoinfo)
         videoInfo = videoinfo;
-    
+   
     if (happyinfo)
         happyInfo = happyinfo;
-    
+   
     if (sadinfo)
         sadInfo = sadinfo;
-
+ 
+ 
     if (thumbsupinfo)
         thumbsUpInfo = thumbsupinfo;
-
+ 
+ 
     if (thumbsdowninfo)
         thumbsDownInfo = thumbsdowninfo;
-
+ 
+ 
     if (nodinfo)
         nodInfo = nodinfo;
-
+ 
+ 
     if (shakeinfo)
         shakeInfo = shakeinfo;
-
-
+ 
+ 
+ 
+ 
     console.log(cName);
     if (conc) {
         await conc.forEach(sid => {
             connections[sid] = new RTCPeerConnection(configuration);
-
+ 
+ 
             connections[sid].onicecandidate = function (event) {
                 if (event.candidate) {
                     console.log('icecandidate fired');
                     socket.emit('new icecandidate', event.candidate, sid);
                 }
             };
-
+ 
+ 
             connections[sid].ontrack = function (event) {
-
+ 
+ 
                 if (!document.getElementById(sid)) {
                     console.log('track event fired')
                     let vidCont = document.createElement('div');
@@ -886,104 +948,124 @@ socket.on('join room', async (conc, cnames, micinfo, videoinfo, happyinfo, sadin
                         newvideo.style.visibility = 'hidden';
                     }
                     newvideo.srcObject = event.streams[0];
-
+ 
+ 
                     if (micInfo[sid] == 'on')
                         muteIcon.style.visibility = 'hidden';
                     else
                         muteIcon.style.visibility = 'visible';
-                    
-
-                    if(host) {
+                   
+ 
+ 
+                    // if(host) {
                         if (happyInfo[sid] == 'on') {
                             happyIcon.style.visibility = 'visible';
-                        }   
+                        }  
                         else {
                             happyIcon.style.visibility = 'hidden';
                         }
-
+ 
+ 
                         if (sadInfo[sid] == 'on') {
                             sadIcon.style.visibility = 'visible';
-                        }   
+                        }  
                         else {
                             sadIcon.style.visibility = 'hidden';
                         }
-
+ 
+ 
                         if (thumbsUpInfo[sid] == 'on') {
                             thumbsUpIcon.style.visibility = 'visible';
-                        }   
+                        }  
                         else {
                             thumbsUpIcon.style.visibility = 'hidden';
                         }
-
+ 
+ 
                         if (thumbsDownInfo[sid] == 'on') {
                             thumbsDownIcon.style.visibility = 'visible';
-                        }   
+                        }  
                         else {
                             thumbsDownIcon.style.visibility = 'hidden';
                         }
-
+ 
+ 
                         if (nodInfo[sid] == 'on') {
-
+ 
+ 
                             numNod += 1;
                             nodIcon.style.visibility = 'visible';
-                        }   
+                        }  
                         else {
                             nodIcon.style.visibility = 'hidden';
                         }
-
+ 
+ 
                         if (shakeInfo[sid] == 'on') {
                             nodIcon.style.visibility = 'visible';
-                        }   
+                        }  
                         else {
                             nodIcon.style.visibility = 'hidden';
                         }
-
+ 
+ 
                         vidCont.appendChild(happyIcon);
                         vidCont.appendChild(sadIcon);
                         vidCont.appendChild(thumbsUpIcon);
                         vidCont.appendChild(thumbsDownIcon);
                         vidCont.appendChild(nodIcon);
                         vidCont.appendChild(shakeIcon);
-                    }
-
+                    // }
+ 
+ 
                     if (videoInfo[sid] == 'on')
                         videoOff.style.visibility = 'hidden';
                     else
                         videoOff.style.visibility = 'visible';
-
-                    vidCont.appendChild(newvideo);
+ 
+ 
                     vidCont.appendChild(name);
                     vidCont.appendChild(muteIcon);
                     vidCont.appendChild(videoOff);
-
+ 
+ 
                     videoContainer.appendChild(vidCont);
-
+ 
+ 
                 }
-
+ 
+ 
             };
-
+ 
+ 
             connections[sid].onremovetrack = function (event) {
                 if (document.getElementById(sid)) {
                     document.getElementById(sid).remove();
                 }
             }
-
+ 
+ 
             connections[sid].onnegotiationneeded = function () {
-
+ 
+ 
                 connections[sid].createOffer()
                     .then(function (offer) {
                         return connections[sid].setLocalDescription(offer);
                     })
                     .then(function () {
-
+ 
+ 
                         socket.emit('video-offer', connections[sid].localDescription, sid);
-
+ 
+ 
                     })
                     .catch(reportError);
             };
-
+ 
+ 
         });
-
+ 
+ 
         Promise.all([
         faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
         faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
@@ -995,7 +1077,8 @@ socket.on('join room', async (conc, cnames, micinfo, videoinfo, happyinfo, sadin
             main();
             startNodDetect();
         })
-
+ 
+ 
     }
     else {
         Promise.all([
@@ -1016,30 +1099,35 @@ socket.on('join room', async (conc, cnames, micinfo, videoinfo, happyinfo, sadin
             .catch(handleGetUserMediaError);
         })
     }
-})
-
-socket.on('remove peer', sid => {
+ })
+ 
+ 
+ socket.on('remove peer', sid => {
     if (document.getElementById(sid)) {
         document.getElementById(sid).remove();
     }
-
+ 
+ 
     delete connections[sid];
-})
-
-sendButton.addEventListener('click', () => {
+ })
+ 
+ 
+ sendButton.addEventListener('click', () => {
     const msg = messageField.value;
     messageField.value = '';
     socket.emit('message', msg, username, roomid);
-})
-
-messageField.addEventListener("keyup", function (event) {
+ })
+ 
+ 
+ messageField.addEventListener("keyup", function (event) {
     if (event.keyCode === 13) {
         event.preventDefault();
         sendButton.click();
     }
-});
-
-socket.on('message', (msg, sendername, time) => {
+ });
+ 
+ 
+ socket.on('message', (msg, sendername, time) => {
     chatRoom.scrollTop = chatRoom.scrollHeight;
     chatRoom.innerHTML += `<div class="message">
     <div class="info">
@@ -1049,31 +1137,40 @@ socket.on('message', (msg, sendername, time) => {
     <div class="content">
         ${msg}
     </div>
-</div>`
-});
-
-socket.on('update attendees', (attendees) => {
+ </div>`
+ });
+ 
+ 
+ socket.on('update attendees', (attendees) => {
   // update the attendees list on the UI
   attendeesList.innerHTML = '';
-
+ 
+ 
   attendees.forEach((attendee) => {
     const li = document.createElement('li');
     li.textContent = attendee;
     attendeesList.appendChild(li);
   });
-});
-
-
-
-
-
-/** Emotions  */
-var calibrateHappy = 0.8;
-var calibrateSad = 0.8;
-var calibrateFear = 0.8;
-
-videoButt.addEventListener('click', () => {
-
+ });
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ /** Emotions  */
+ var calibrateHappy = 0.8;
+ var calibrateSad = 0.8;
+ var calibrateFear = 0.8;
+ 
+ 
+ videoButt.addEventListener('click', () => {
+ 
+ 
     if (videoAllowed) {
         for (let key in videoTrackSent) {
             videoTrackSent[key].enabled = false;
@@ -1081,7 +1178,8 @@ videoButt.addEventListener('click', () => {
         videoButt.innerHTML = `<i class="fas fa-video-slash"></i>`;
         videoAllowed = 0;
         videoButt.style.backgroundColor = "#b12c2c";
-
+ 
+ 
         if (mystream) {
             mystream.getTracks().forEach(track => {
                 if (track.kind === 'video') {
@@ -1089,9 +1187,11 @@ videoButt.addEventListener('click', () => {
                 }
             })
         }
-
+ 
+ 
         myvideooff.style.visibility = 'visible';
-
+ 
+ 
         socket.emit('action', 'videooff');
     }
     else {
@@ -1107,61 +1207,99 @@ videoButt.addEventListener('click', () => {
                     track.enabled = true;
             })
         }
-
+ 
+ 
         myvideooff.style.visibility = 'hidden';
-
+ 
+ 
         socket.emit('action', 'videoon');
     }
-});
-
-
-
-
-myvideo.addEventListener('play', async () => {
+ });
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ myvideo.addEventListener('play', async () => {
     const canvas = faceapi.createCanvasFromMedia(myvideo);
     document.body.append(canvas)
     const displaySize = { width: myvideo.width, height: myvideo.height }
     faceapi.matchDimensions(canvas, displaySize);
-      
-
+     
+ 
+ 
     setInterval(async () => {
-
+ 
+ 
         /** Emotions **/
-        const detections = await faceapi.detectAllFaces(myvideo, 
+        const detections = await faceapi.detectAllFaces(myvideo,
         new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceExpressions()
         const resizedDetections = faceapi.resizeResults(detections, displaySize)
         canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height)
-
+ 
+ 
         if(detections[0].expressions.sad > calibrateSad || detections[0].expressions.fearful > calibrateFear){
         happyAllowed = 0;
         sadAllowed = 1;
-
+ 
+ 
+        // if(host) {
+            myhappyicon.style.visibility = 'hidden';
+            mysadicon.style.visibility = 'visible';
+        // }
+ 
+ 
         socket.emit('action', 'happyoff', host);
         socket.emit('action', 'sadon', host);
         }
-
+ 
+ 
         else if(detections[0].expressions.happy > calibrateHappy){
         happyAllowed = 1;
         sadAllowed = 0;
-
+ 
+ 
+        // if(host) {
+            myhappyicon.style.visibility = 'visible';
+            mysadicon.style.visibility = 'hidden';
+        // }
+ 
+ 
+ 
+ 
         socket.emit('action', 'happyon', host);
         socket.emit('action', 'sadoff', host);
-        } 
+        }
         else {
             happyAllowed = 0;
             sadAllowed = 0;
-
+ 
+ 
+            // if(host) {
+                myhappyicon.style.visibility = 'hidden';
+                mysadicon.style.visibility = 'hidden';
+            // }
+ 
+ 
             socket.emit('action', 'happyoff', host);
             socket.emit('action', 'sadoff', host);
         }
-
+ 
+ 
     }, 100)
-
-})
-
-
-audioButt.addEventListener('click', () => {
-
+ 
+ 
+ })
+ 
+ 
+ 
+ 
+ audioButt.addEventListener('click', () => {
+ 
+ 
     if (audioAllowed) {
         for (let key in audioTrackSent) {
             audioTrackSent[key].enabled = false;
@@ -1175,7 +1313,8 @@ audioButt.addEventListener('click', () => {
                     track.enabled = false;
             })
         }
-
+ 
+ 
         mymuteicon.style.visibility = 'visible';
         socket.emit('action', 'mute');
     }
@@ -1192,14 +1331,17 @@ audioButt.addEventListener('click', () => {
                     track.enabled = true;
             })
         }
-
+ 
+ 
         mymuteicon.style.visibility = 'hidden';
-
+ 
+ 
         socket.emit('action', 'unmute');
     }
-})
-
-socket.on('action', (msg, sid) => {
+ })
+ 
+ 
+ socket.on('action', (msg, sid) => {
     // console.log(msg)
     if (msg == 'mute') {
         console.log(sid + ' muted themself');
@@ -1217,79 +1359,79 @@ socket.on('action', (msg, sid) => {
     }
     else if (msg == 'happyon') {
         // console.log(sid + ' is happy');
-        if(host) {
+        // if(host) {
             document.querySelector(`#happy-icon${sid}`).style.visibility = 'visible';
-        }
+        // }
         happyInfo[sid] = 'on';
     }
     else if (msg == 'happyoff') {
         // console.log(sid + ' is not happy');
-        if(host) {
+        // if(host) {
             document.querySelector(`#happy-icon${sid}`).style.visibility = 'hidden';
-        }
+        // }
         happyInfo[sid] = 'off';
     }
     else if (msg == 'sadon') {
         // console.log(sid + ' is sad');
-        if(host) {
+        // if(host) {
             document.querySelector(`#sad-icon${sid}`).style.visibility = 'visible';
-        }
+        // }
         sadInfo[sid] = 'on';
     }
     else if (msg == 'sadoff') {
         // console.log(sid + ' is not sad');
-        if(host) {
+        // if(host) {
             document.querySelector(`#sad-icon${sid}`).style.visibility = 'hidden';
-        }
+        // }
         sadInfo[sid] = 'off';
     }
     else if (msg == 'thumbsup') {
-        if(host) {
+        // if(host) {
             document.querySelector(`#thumbs-up-icon${sid}`).style.visibility = 'visible';
-        }
+        // }
         thumbsUpInfo[sid] = 'on';
     }
     else if (msg == 'unthumbsup') {
-        if(host) {
+        // if(host) {
             document.querySelector(`#thumbs-up-icon${sid}`).style.visibility = 'hidden';
-        }
+        // }
         thumbsUpInfo[sid] = 'off';
     }
     else if (msg == 'thumbsdown') {
-        if(host) {
+        // if(host) {
             document.querySelector(`#thumbs-down-icon${sid}`).style.visibility = 'visible';
-        }
+        // }
         thumbsDownInfo[sid] = 'on';
     }
     else if (msg == 'unthumbsdown') {
-        if(host) {
+        // if(host) {
             document.querySelector(`#thumbs-down-icon${sid}`).style.visibility = 'hidden';
-        }
+        // }
         thumbsDownInfo[sid] = 'off';
     }
     else if (msg == 'nod') {
         console.log("nod")
-        if(host) {
+        // if(host) {
             document.querySelector(`#nod-icon${sid}`).style.visibility = 'visible';
-        }
+        // }
         nodInfo[sid] = 'on';
     }
     else if (msg == 'unnod') {
-        if(host) {
+        // if(host) {
             document.querySelector(`#nod-icon${sid}`).style.visibility = 'hidden';
-        }
+        // }
         nodInfo[sid] = 'off';
     }
     else if (msg == 'shake') {
-        if(host) {
+        // if(host) {
             document.querySelector(`#shake-icon${sid}`).style.visibility = 'visible';
-        }
+        // }
         shakeInfo[sid] = 'on';
     }
     else if (msg == 'unshake') {
-        if(host) {
+        // if(host) {
             document.querySelector(`#shake-icon${sid}`).style.visibility = 'hidden';
-        }
+        // }
         shakeInfo[sid] = 'off';
     }
     else if (msg == 'videooff') {
@@ -1303,36 +1445,15 @@ socket.on('action', (msg, sid) => {
         videoInfo[sid] = 'on';
     }
     else if (msg == 'sharescreenon') {
-        // document.querySelector(`#video${sid}`).style.visibility = 'visible';
-        const videoContainer = document.querySelector(`#video${sid}`);
-        videoContainer.style.visibility = 'visible';
-        videoContainer.style.imageRendering = 'auto'; // Add image-rendering style
-        videoContainer.style.zIndex = '2';
-        videoContainer.style.width = '980px';
-        videoContainer.style.height = '600px';
-        videoContainer.style.position = 'fixed';
-        videoContainer.style.top = '37.5%';
-        videoContainer.style.left = '36.5%';
-        videoContainer.style.transform = 'translate(-50%, -50%)';
-        // videoContainer.style.zIndex = '5';
-        // videoContainer.style.transform = 'scaleX(-1)';
-        // videoContainer.style.objectFit = 'contain'
-
+        document.querySelector(`#video${sid}`).style.visibility = 'visible';
     }
     else if (msg == 'sharescreenoff') {
-        const videoContainer = document.querySelector(`#video${sid}`);
-        videoContainer.style.visibility = 'visible';
-        videoContainer.style.width = '100%';
-        videoContainer.style.height = '100%';
-        videoContainer.style.position = 'absolute';
-        videoContainer.style.top = '50%';
-        videoContainer.style.left = '50%';
-        videoContainer.style.transform = 'translate(-50%, -50%)';
+        document.querySelector(`#video${sid}`).style.visibility = 'hidden';
     }
-    
-})
-
-whiteboardButt.addEventListener('click', () => {
+ })
+ 
+ 
+ whiteboardButt.addEventListener('click', () => {
     if (boardVisisble) {
         whiteboardCont.style.visibility = 'hidden';
         boardVisisble = false;
@@ -1341,15 +1462,18 @@ whiteboardButt.addEventListener('click', () => {
         whiteboardCont.style.visibility = 'visible';
         boardVisisble = true;
     }
-})
-
-cutCall.addEventListener('click', () => {
+ })
+ 
+ 
+ cutCall.addEventListener('click', () => {
     location.href = '/';
-})
-
+ })
+ 
+ 
     //Time Interval Function
     let intervalObject = null;
-
+ 
+ 
     /**
      * Starts an interval timer with the chosen interval value.
      */
@@ -1367,7 +1491,7 @@ cutCall.addEventListener('click', () => {
       startIntervalButton.disabled = true;
       cancelIntervalButton.disabled = false;
     }
-    
+   
     /**
      * Cancels the currently running interval timer, if there is one.
      */
@@ -1383,7 +1507,7 @@ cutCall.addEventListener('click', () => {
         console.log("No interval to cancel.");
       }
     }
-    
+   
     /**
      * Creates and returns an object with a `cancel()` method that can be used to stop the interval timer.
      * @param {Function} callback - The function to execute at each interval.
@@ -1398,53 +1522,67 @@ cutCall.addEventListener('click', () => {
           }
         };
       }
-
+ 
+ 
       startIntervalButton.addEventListener('click', () => {
         startInterval();
       })
-
+ 
+ 
       cancelIntervalButton.addEventListener('click', () => {
         cancelInterval();
       })
-
-statBar.addEventListener('click', () => {
+ 
+ 
+ statBar.addEventListener('click', () => {
     stat.style.visibility = 'visible';
     chatRoom.style.display = 'none';
     attendeesList.style.display = 'none';
     chatCont.style.visibility = 'hidden';
-})
-
-chatBar.addEventListener('click', () => {
+ })
+ 
+ 
+ chatBar.addEventListener('click', () => {
     stat.style.visibility = 'hidden';
     chatRoom.style.display = 'block';
     attendeesList.style.display = 'none';
     chatCont.style.visibility = 'visible';
-})
-
-attendeesBar.addEventListener('click', () => {
+ })
+ 
+ 
+ attendeesBar.addEventListener('click', () => {
     attendeesList.style.display = 'block';
     stat.style.visibility = 'hidden';
     chatRoom.style.display = 'none';
-    chatCont.style.visibility = 'hidden';
-})
-
-async function main() {
-
-    //Thumbs Down 
+    chatCont.style.visibility = 'visible';
+ })
+ 
+ 
+ async function main() {
+ 
+ 
+    //Thumbs Down
     // describe thumbs down gesture 👎
     const thumbsDownGesture = new fp.GestureDescription('thumbs_down');
-
+ 
+ 
     thumbsDownGesture.addCurl(fp.Finger.Thumb, fp.FingerCurl.NoCurl);
     thumbsDownGesture.addDirection(fp.Finger.Thumb, fp.FingerDirection.VerticalDown, 1.0);
-
+ 
+ 
     thumbsDownGesture.addDirection(fp.Finger.Thumb, fp.FingerDirection.DiagonalDownLeft, 0.9);
     thumbsDownGesture.addDirection(fp.Finger.Thumb, fp.FingerDirection.DiagonalDownRight, 0.9);
-
+ 
+ 
     // do this for all other fingers
     for(let finger of [fp.Finger.Index, fp.Finger.Middle, fp.Finger.Ring, fp.Finger.Pinky]) {
     thumbsDownGesture.addCurl(finger, fp.FingerCurl.FullCurl, 1.0);
     thumbsDownGesture.addCurl(finger, fp.FingerCurl.HalfCurl, 0.9);
     }
+ 
+ 
+ 
+ 
       // configure gesture estimator
       // add "👎" and "👍" as sample gestures
       const knownGestures = [
@@ -1452,13 +1590,17 @@ async function main() {
         thumbsDownGesture
       ];
       const GE = new fp.GestureEstimator(knownGestures);
-
+ 
+ 
       // load handpose model
       const model = await handpose.load();
     //   console.log("Handpose model loaded");
-
+ 
+ 
       // main estimation loop
       const estimateHands = async () => {
+ 
+ 
         // get hand landmarks from video
         // Note: Handpose currently only detects one hand at a time
         // Therefore the maximum number of predictions is 1
@@ -1467,43 +1609,82 @@ async function main() {
         if(predictions.length != 0) {
             const est = GE.estimate(predictions[0]?.landmarks, 9);
             // console.log(est);
-
+ 
+ 
             if(est.gestures[0]?.name == "thumbs_up") {
                 // console.log("thumbs up")
+ 
+ 
+                //   if(host) {
+                    mythumbsupicon.style.visibility = 'visible';
+                    mythumbsdownicon.style.visibility = 'hidden';
+                //   }
+ 
+ 
                   thumbsUpAllowed = 1;
                   thumbsDownAllowed = 0;
-
+ 
+ 
                     socket.emit('action', 'thumbsup', host);
                     socket.emit('action', 'unthumbsdown', host);
             }
             else if(est.gestures[0]?.name == "thumbs_down") {
                 // console.log("thumbs down")
+ 
+ 
+                //  if(host) {
+                    mythumbsupicon.style.visibility = 'hidden';
+                    mythumbsdownicon.style.visibility = 'visible';
+                //   }
+ 
+ 
                   thumbsUpAllowed = 0;
                   thumbsDownAllowed = 1;
-
-
+ 
+ 
+ 
+ 
                     socket.emit('action', 'unthumbsup', host);
                     socket.emit('action', 'thumbsdown', host);
             }
             else {
+ 
+ 
+                //  if(host) {
+                    mythumbsupicon.style.visibility = 'hidden';
+                    mythumbsdownicon.style.visibility = 'hidden';
+                //   }
+ 
+ 
                   thumbsUpAllowed = 0;
                   thumbsDownAllowed = 0;
-
+ 
+ 
                     socket.emit('action', 'unthumbsup', host);
                     socket.emit('action', 'unthumbsdown', host);
             }
         }  else {
                   thumbsUpAllowed = 0;
                   thumbsDownAllowed = 0;
-
+ 
+ 
+                //   if(host) {
+                    mythumbsupicon.style.visibility = 'hidden';
+                    mythumbsdownicon.style.visibility = 'hidden';
+                //   }
+ 
+ 
                     socket.emit('action', 'unthumbsup', host);
                     socket.emit('action', 'unthumbsdown', host);
-        }  
-
+        } 
+ 
+ 
         // ...and so on
         setTimeout(() => { estimateHands(); }, 100);
       };
-
+ 
+ 
       estimateHands();
     //   console.log("Starting predictions");
     }
+     
