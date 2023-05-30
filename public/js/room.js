@@ -1616,8 +1616,8 @@ function startNodDetect() {
  
  
                 //   if(host) {
-                    mythumbsupicon.style.visibility = 'visible';
-                    mythumbsdownicon.style.visibility = 'hidden';
+                    // mythumbsupicon.style.visibility = 'visible';
+                    // mythumbsdownicon.style.visibility = 'hidden';
                 //   }
  
  
@@ -1633,8 +1633,8 @@ function startNodDetect() {
  
  
                 //  if(host) {
-                    mythumbsupicon.style.visibility = 'hidden';
-                    mythumbsdownicon.style.visibility = 'visible';
+                    // mythumbsupicon.style.visibility = 'hidden';
+                    // mythumbsdownicon.style.visibility = 'visible';
                 //   }
  
  
@@ -1651,8 +1651,8 @@ function startNodDetect() {
  
  
                 //  if(host) {
-                    mythumbsupicon.style.visibility = 'hidden';
-                    mythumbsdownicon.style.visibility = 'hidden';
+                    // mythumbsupicon.style.visibility = 'hidden';
+                    // mythumbsdownicon.style.visibility = 'hidden';
                 //   }
  
  
@@ -1669,8 +1669,8 @@ function startNodDetect() {
  
  
                 //   if(host) {
-                    mythumbsupicon.style.visibility = 'hidden';
-                    mythumbsdownicon.style.visibility = 'hidden';
+                    // mythumbsupicon.style.visibility = 'hidden';
+                    // mythumbsdownicon.style.visibility = 'hidden';
                 //   }
  
  
