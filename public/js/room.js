@@ -415,28 +415,28 @@ function startNodDetect() {
         
         
         if(data.gesture == "nodding") {
-            // if(host) {
-                //numNod += 1;
-                mynodicon.style.visibility = 'visible';
-                myshakeicon.style.visibility = 'hidden';
+            // if(!host) {
+            //     //numNod += 1;
+            //     mynodicon.style.visibility = 'visible';
+            //     myshakeicon.style.visibility = 'hidden';
             // }
             socket.emit('action', 'nod', host);
             socket.emit('action', 'unshake', host);
         }
         else if(data.gesture == "turning") {
             console.log("turning");
-            // if(host) {
-                myshakeicon.style.visibility = 'visible';
-                mynodicon.style.visibility = 'hidden';
+            // if(!host) {
+            //     myshakeicon.style.visibility = 'visible';
+            //     mynodicon.style.visibility = 'hidden';
             // }
             socket.emit('action', 'unnod', host);
             socket.emit('action', 'shake', host);
         }
         else {
             console.log("stationary");
-            // if(host) {
-                myshakeicon.style.visibility = 'hidden';
-                mynodicon.style.visibility = 'hidden';
+            // if(!host) {
+            //     myshakeicon.style.visibility = 'hidden';
+            //     mynodicon.style.visibility = 'hidden';
             // }
             socket.emit('action', 'unnod', host);
             socket.emit('action', 'unshake', host);
@@ -555,7 +555,7 @@ function startNodDetect() {
                 muteIcon.style.visibility = 'visible';
  
  
-            // if (host) {
+            if (host) {
                 if (happyInfo[sid] == 'off') {
                     happyIcon.style.visibility = 'hidden';
                 }
@@ -613,7 +613,7 @@ function startNodDetect() {
                 vidCont.appendChild(thumbsDownIcon);
                 vidCont.appendChild(nodIcon);
                 vidCont.appendChild(shakeIcon);
-            // }
+            }
  
  
             if (videoInfo[sid] == 'on')
@@ -957,7 +957,7 @@ function startNodDetect() {
                    
  
  
-                    // if(host) {
+                    if(host || hostId == sid) {
                         if (happyInfo[sid] == 'on') {
                             happyIcon.style.visibility = 'visible';
                         }  
@@ -1015,7 +1015,7 @@ function startNodDetect() {
                         vidCont.appendChild(thumbsDownIcon);
                         vidCont.appendChild(nodIcon);
                         vidCont.appendChild(shakeIcon);
-                    // }
+                    }
  
  
                     if (videoInfo[sid] == 'on')
@@ -1246,9 +1246,9 @@ function startNodDetect() {
         sadAllowed = 1;
  
  
-        // if(host) {
-            myhappyicon.style.visibility = 'hidden';
-            mysadicon.style.visibility = 'visible';
+        // if(!host) {
+        //     myhappyicon.style.visibility = 'hidden';
+        //     mysadicon.style.visibility = 'visible';
         // }
  
  
@@ -1262,9 +1262,9 @@ function startNodDetect() {
         sadAllowed = 0;
  
  
-        // if(host) {
-            myhappyicon.style.visibility = 'visible';
-            mysadicon.style.visibility = 'hidden';
+        // if(!host) {
+        //     myhappyicon.style.visibility = 'visible';
+        //     mysadicon.style.visibility = 'hidden';
         // }
  
  
@@ -1278,9 +1278,9 @@ function startNodDetect() {
             sadAllowed = 0;
  
  
-            // if(host) {
-                myhappyicon.style.visibility = 'hidden';
-                mysadicon.style.visibility = 'hidden';
+            // if(!host) {
+            //     myhappyicon.style.visibility = 'hidden';
+            //     mysadicon.style.visibility = 'hidden';
             // }
  
  
